@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1B2A4A">
+    <meta name="description" content="Gérez vos factures mensuelles - Navette Express Entreprise">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <title>Facturation | Navette Express Entreprise</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="images/logo/favicon.png">
+    <link rel="apple-touch-icon" href="images/logo/apple-touch-icon.png">
+    
+    <!-- Google Fonts Montserrat -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="css/app.css">
+</head>
+<body class="page-facturation">
+    
+    <!-- Sidebar Desktop/Tablette -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="dashboard.html" class="sidebar-logo">
+                <picture>
+                    <source srcset="images/logo/logo-jaebets.webp" type="image/webp">
+                    <img src="images/logo/logo-jaebets.png" alt="JAEBETS HOLDING" loading="lazy">
+                </picture>
+            </a>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="sidebar-link" data-page="dashboard">
+                <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7" rx="1"/>
+                    <rect x="14" y="3" width="7" height="7" rx="1"/>
+                    <rect x="3" y="14" width="7" height="7" rx="1"/>
+                    <rect x="14" y="14" width="7" height="7" rx="1"/>
+                </svg>
+                <span>Dashboard</span>
+            </a>
+            
+            <a href="corridors.html" class="sidebar-link" data-page="corridors">
+                <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
+                    <line x1="4" y1="22" x2="4" y2="15"/>
+                </svg>
+                <span>Corridors</span>
+            </a>
+            
+            <a href="employes.html" class="sidebar-link" data-page="employes">
+                <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                <span>Employés</span>
+            </a>
+            
+            <a href="facturation.html" class="sidebar-link active" data-page="facturation">
+                <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                </svg>
+                <span>Factures</span>
+            </a>
+            
+            <a href="profil.html" class="sidebar-link" data-page="profil">
+                <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 21h18"/>
+                    <path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"/>
+                    <path d="M9 8h1"/><path d="M9 12h1"/><path d="M9 16h1"/>
+                    <path d="M14 8h1"/><path d="M14 12h1"/><path d="M14 16h1"/>
+                </svg>
+                <span>Profil</span>
+            </a>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <a href="notifications.html" class="sidebar-link sidebar-link-small">
+                <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                </svg>
+                <span>Notifications</span>
+                <span class="notification-badge">3</span>
+            </a>
+            
+            <button class="sidebar-link sidebar-link-small btn-logout" id="btnLogout">
+                <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                    <polyline points="16 17 21 12 16 7"/>
+                    <line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+                <span>Déconnexion</span>
+            </button>
+        </div>
+    </aside>
+    
+    <!-- Contenu principal -->
+    <main class="main-content">
+        
+        <!-- Header mobile -->
+        <header class="mobile-header">
+            <div class="mobile-header-left">
+                <a href="dashboard.html" class="mobile-back-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="15 18 9 12 15 6"/>
+                    </svg>
+                </a>
+                <h1 class="mobile-header-title">Facturation</h1>
+            </div>
+            <div class="mobile-header-right">
+                <a href="notifications.html" class="mobile-header-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                    </svg>
+                    <span class="notification-dot"></span>
+                </a>
+            </div>
+        </header>
+        
+        <!-- Contenu Facturation -->
+        <div class="page-content">
+            
+            <!-- Titre Desktop -->
+            <header class="page-header desktop-only">
+                <div class="page-header-content">
+                    <h1 class="page-title">Facturation</h1>
+                    <p class="page-subtitle">Gérez vos factures et paiements</p>
+                </div>
+            </header>
+            
+            <!-- Résumé financier -->
+            <section class="finance-summary">
+                <div class="finance-card finance-card-main">
+                    <div class="finance-card-header">
+                        <span class="finance-card-label">Facture en cours</span>
+                        <span class="finance-card-period">Mars 2026</span>
+                    </div>
+                    <div class="finance-card-amount">850 000 FCFA</div>
+                    <div class="finance-card-footer">
+                        <span class="finance-card-status status-badge status-en-attente">À payer avant le 05/04</span>
+                    </div>
+                    <button type="button" class="btn btn-primary btn-pay" onclick="ouvrirPaiement()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                            <line x1="1" y1="10" x2="23" y2="10"/>
+                        </svg>
+                        Payer maintenant
+                    </button>
+                </div>
+                
+                <div class="finance-stats">
+                    <div class="finance-stat">
+                        <div class="finance-stat-icon finance-stat-success">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                        </div>
+                        <div class="finance-stat-content">
+                            <span class="finance-stat-value">2 450 000</span>
+                            <span class="finance-stat-label">Total payé (2026)</span>
+                        </div>
+                    </div>
+                    <div class="finance-stat">
+                        <div class="finance-stat-icon finance-stat-warning">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polyline points="12 6 12 12 16 14"/>
+                            </svg>
+                        </div>
+                        <div class="finance-stat-content">
+                            <span class="finance-stat-value">850 000</span>
+                            <span class="finance-stat-label">En attente</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Filtres -->
+            <section class="filters-section">
+                <div class="filter-row">
+                    <div class="filter-select-wrapper">
+                        <select id="filterAnnee" class="filter-select">
+                            <option value="2026" selected>2026</option>
+                            <option value="2025">2025</option>
+                        </select>
+                        <svg class="filter-select-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"/>
+                        </svg>
+                    </div>
+                    
+                    <div class="filter-select-wrapper">
+                        <select id="filterStatut" class="filter-select">
+                            <option value="">Tous les statuts</option>
+                            <option value="payee">Payée</option>
+                            <option value="en-attente">En attente</option>
+                            <option value="retard">En retard</option>
+                        </select>
+                        <svg class="filter-select-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"/>
+                        </svg>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Liste des factures -->
+            <section class="factures-section">
+                <h2 class="section-title">Historique des factures</h2>
+                
+                <div class="factures-list">
+                    
+                    <!-- Facture en attente -->
+                    <article class="facture-card" data-id="1" data-status="en-attente">
+                        <div class="facture-header">
+                            <div class="facture-icon facture-icon-warning">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                    <polyline points="14 2 14 8 20 8"/>
+                                </svg>
+                            </div>
+                            <div class="facture-info">
+                                <h3 class="facture-numero">FAC-2026-003</h3>
+                                <span class="facture-periode">Mars 2026</span>
+                            </div>
+                            <div class="facture-status">
+                                <span class="status-badge status-en-attente">En attente</span>
+                            </div>
+                        </div>
+                        
+                        <div class="facture-details">
+                            <div class="facture-detail">
+                                <span class="facture-detail-label">Montant</span>
+                                <span class="facture-detail-value">850 000 FCFA</span>
+                            </div>
+                            <div class="facture-detail">
+                                <span class="facture-detail-label">Échéance</span>
+                                <span class="facture-detail-value">05/04/2026</span>
+                            </div>
+                            <div class="facture-detail">
+                                <span class="facture-detail-label">Corridors</span>
+                                <span class="facture-detail-value">3 actifs</span>
+                            </div>
+                        </div>
+                        
+                        <div class="facture-actions">
+                            <a href="detail-facture.html?id=1" class="btn btn-outline btn-sm">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                </svg>
+                                Détails
+                            </a>
+                            <button type="button" class="btn btn-primary btn-sm" onclick="ouvrirPaiement()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                                    <line x1="1" y1="10" x2="23" y2="10"/>
+                                </svg>
+                                Payer
+                            </button>
+                        </div>
+                    </article>
+                    
+                    <!-- Facture payée -->
+                    <article class="facture-card" data-id="2" data-status="payee">
+                        <div class="facture-header">
+                            <div class="facture-icon facture-icon-success">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                    <polyline points="14 2 14 8 20 8"/>
+                                    <polyline points="9 15 11 17 15 13"/>
+                                </svg>
+                            </div>
+                            <div class="facture-info">
+                                <h3 class="facture-numero">FAC-2026-002</h3>
+                                <span class="facture-periode">Février 2026</span>
+                            </div>
+                            <div class="facture-status">
+                                <span class="status-badge status-assigne">Payée</span>
+                            </div>
+                        </div>
+                        
+                        <div class="facture-details">
+                            <div class="facture-detail">
+                                <span class="facture-detail-label">Montant</span>
+                                <span class="facture-detail-value">820 000 FCFA</span>
+                            </div>
+                            <div class="facture-detail">
+                                <span class="facture-detail-label">Payée le</span>
+                                <span class="facture-detail-value">02/03/2026</span>
+                            </div>
+                            <div class="facture-detail">
+                                <span class="facture-detail-label">Méthode</span>
+                                <span class="facture-detail-value">Mobile Money</span>
+                            </div>
+                        </div>
+                        
+                        <div class="facture-actions">
+                            <a href="detail-facture.html?id=2" class="btn btn-outline btn-sm">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                </svg>
+                                Détails
+                            </a>
+                            <button type="button" class="btn btn-outline btn-sm" onclick="telechargerFacture(2)">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="7 10 12 15 17 10"/>
+                                    <line x1="12" y1="15" x2="12" y2="3"/>
+                                </svg>
+                                PDF
+                            </button>
+                        </div>
+                    </article>
+                    
+                    <!-- Facture payée -->
+                    <article class="facture-card" data-id="3" data-status="payee">
+                        <div class="facture-header">
+                            <div class="facture-icon facture-icon-success">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                    <polyline points="14 2 14 8 20 8"/>
+                                    <polyline points="9 15 11 17 15 13"/>
+                                </svg>
+                            </div>
+                            <div class="facture-info">
+                                <h3 class="facture-numero">FAC-2026-001</h3>
+                                <span class="facture-periode">Janvier 2026</span>
+                            </div>
+                            <div class="facture-status">
+                                <span class="status-badge status-assigne">Payée</span>
+                            </div>
+                        </div>
+                        
+                        <div class="facture-details">
+                            <div class="facture-detail">
+                                <span class="facture-detail-label">Montant</span>
+                                <span class="facture-detail-value">780 000 FCFA</span>
+                            </div>
+                            <div class="facture-detail">
+                                <span class="facture-detail-label">Payée le</span>
+                                <span class="facture-detail-value">03/02/2026</span>
+                            </div>
+                            <div class="facture-detail">
+                                <span class="facture-detail-label">Méthode</span>
+                                <span class="facture-detail-value">Virement bancaire</span>
+                            </div>
+                        </div>
+                        
+                        <div class="facture-actions">
+                            <a href="detail-facture.html?id=3" class="btn btn-outline btn-sm">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                </svg>
+                                Détails
+                            </a>
+                            <button type="button" class="btn btn-outline btn-sm" onclick="telechargerFacture(3)">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="7 10 12 15 17 10"/>
+                                    <line x1="12" y1="15" x2="12" y2="3"/>
+                                </svg>
+                                PDF
+                            </button>
+                        </div>
+                    </article>
+                    
+                    <!-- Facture 2025 -->
+                    <article class="facture-card" data-id="4" data-status="payee" data-annee="2025">
+                        <div class="facture-header">
+                            <div class="facture-icon facture-icon-success">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                    <polyline points="14 2 14 8 20 8"/>
+                                    <polyline points="9 15 11 17 15 13"/>
+                                </svg>
+                            </div>
+                            <div class="facture-info">
+                                <h3 class="facture-numero">FAC-2025-012</h3>
+                                <span class="facture-periode">Décembre 2025</span>
+                            </div>
+                            <div class="facture-status">
+                                <span class="status-badge status-assigne">Payée</span>
+                            </div>
+                        </div>
+                        
+                        <div class="facture-details">
+                            <div class="facture-detail">
+                                <span class="facture-detail-label">Montant</span>
+                                <span class="facture-detail-value">750 000 FCFA</span>
+                            </div>
+                            <div class="facture-detail">
+                                <span class="facture-detail-label">Payée le</span>
+                                <span class="facture-detail-value">05/01/2026</span>
+                            </div>
+                            <div class="facture-detail">
+                                <span class="facture-detail-label">Méthode</span>
+                                <span class="facture-detail-value">Orange Money</span>
+                            </div>
+                        </div>
+                        
+                        <div class="facture-actions">
+                            <a href="detail-facture.html?id=4" class="btn btn-outline btn-sm">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                </svg>
+                                Détails
+                            </a>
+                            <button type="button" class="btn btn-outline btn-sm" onclick="telechargerFacture(4)">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="7 10 12 15 17 10"/>
+                                    <line x1="12" y1="15" x2="12" y2="3"/>
+                                </svg>
+                                PDF
+                            </button>
+                        </div>
+                    </article>
+                    
+                </div>
+            </section>
+            
+        </div>
+        
+        <!-- Bottom Navigation Mobile -->
+        <nav class="bottom-nav">
+            <a href="dashboard.html" class="bottom-nav-item" data-page="dashboard">
+                <svg class="bottom-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7" rx="1"/>
+                    <rect x="14" y="3" width="7" height="7" rx="1"/>
+                    <rect x="3" y="14" width="7" height="7" rx="1"/>
+                    <rect x="14" y="14" width="7" height="7" rx="1"/>
+                </svg>
+                <span>Dashboard</span>
+            </a>
+            
+            <a href="corridors.html" class="bottom-nav-item" data-page="corridors">
+                <svg class="bottom-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
+                    <line x1="4" y1="22" x2="4" y2="15"/>
+                </svg>
+                <span>Corridors</span>
+            </a>
+            
+            <a href="employes.html" class="bottom-nav-item" data-page="employes">
+                <svg class="bottom-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                </svg>
+                <span>Employés</span>
+            </a>
+            
+            <a href="facturation.html" class="bottom-nav-item active" data-page="facturation">
+                <svg class="bottom-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                </svg>
+                <span>Factures</span>
+            </a>
+            
+            <a href="profil.html" class="bottom-nav-item" data-page="profil">
+                <svg class="bottom-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 21h18"/>
+                    <path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"/>
+                    <path d="M9 8h1"/><path d="M9 12h1"/>
+                    <path d="M14 8h1"/><path d="M14 12h1"/>
+                </svg>
+                <span>Profil</span>
+            </a>
+        </nav>
+        
+    </main>
+    
+    <!-- Modal Paiement -->
+    <div class="modal-overlay hidden" id="modalPaiement">
+        <div class="modal modal-paiement">
+            <div class="modal-header">
+                <h3 class="modal-title">Choisir le mode de paiement</h3>
+                <button type="button" class="modal-close" onclick="fermerModal()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="paiement-amount">
+                    <span class="paiement-label">Montant à payer</span>
+                    <span class="paiement-value">850 000 FCFA</span>
+                </div>
+                
+                <div class="paiement-methods">
+                    <label class="paiement-method">
+                        <input type="radio" name="methodePaiement" value="orange-money" checked>
+                        <div class="paiement-method-content">
+                            <div class="paiement-method-icon paiement-orange">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <rect x="2" y="4" width="20" height="16" rx="2"/>
+                                    <circle cx="12" cy="12" r="4"/>
+                                </svg>
+                            </div>
+                            <div class="paiement-method-info">
+                                <span class="paiement-method-name">Orange Money</span>
+                                <span class="paiement-method-desc">Paiement instantané</span>
+                            </div>
+                        </div>
+                    </label>
+                    
+                    <label class="paiement-method">
+                        <input type="radio" name="methodePaiement" value="mtn-money">
+                        <div class="paiement-method-content">
+                            <div class="paiement-method-icon paiement-mtn">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <rect x="2" y="4" width="20" height="16" rx="2"/>
+                                    <circle cx="12" cy="12" r="4"/>
+                                </svg>
+                            </div>
+                            <div class="paiement-method-info">
+                                <span class="paiement-method-name">MTN Mobile Money</span>
+                                <span class="paiement-method-desc">Paiement instantané</span>
+                            </div>
+                        </div>
+                    </label>
+                    
+                    <label class="paiement-method">
+                        <input type="radio" name="methodePaiement" value="moov-money">
+                        <div class="paiement-method-content">
+                            <div class="paiement-method-icon paiement-moov">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <rect x="2" y="4" width="20" height="16" rx="2"/>
+                                    <circle cx="12" cy="12" r="4"/>
+                                </svg>
+                            </div>
+                            <div class="paiement-method-info">
+                                <span class="paiement-method-name">Moov Money</span>
+                                <span class="paiement-method-desc">Paiement instantané</span>
+                            </div>
+                        </div>
+                    </label>
+                    
+                    <label class="paiement-method">
+                        <input type="radio" name="methodePaiement" value="virement">
+                        <div class="paiement-method-content">
+                            <div class="paiement-method-icon paiement-bank">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 21h18"/>
+                                    <path d="M3 10h18"/>
+                                    <path d="M5 6l7-3 7 3"/>
+                                    <path d="M4 10v11"/>
+                                    <path d="M20 10v11"/>
+                                    <path d="M8 14v3"/>
+                                    <path d="M12 14v3"/>
+                                    <path d="M16 14v3"/>
+                                </svg>
+                            </div>
+                            <div class="paiement-method-info">
+                                <span class="paiement-method-name">Virement bancaire</span>
+                                <span class="paiement-method-desc">Délai 24-48h</span>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="fermerModal()">Annuler</button>
+                <button type="button" class="btn btn-primary" onclick="procederPaiement()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                    Confirmer
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bouton WhatsApp flottant -->
+    <a href="https://wa.me/2250703285359" target="_blank" rel="noopener" class="whatsapp-fab" title="Contacter le support">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+    </a>
+    
+    <!-- Scripts -->
+    <script src="js/supabase-config.js"></script>
+    <script src="js/fineopay-config.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Vérifier authentification
+            const entrepriseData = W2KApp.Utils.storage.get('entreprise');
+            if (!entrepriseData) {
+                window.location.href = 'connexion.html';
+                return;
+            }
+            
+            // Initialiser navigation
+            W2KApp.Navigation.init();
+            
+            // Initialiser filtres
+            initFiltres();
+            
+            // Déconnexion
+            document.getElementById('btnLogout')?.addEventListener('click', function(e) {
+                e.preventDefault();
+                W2KApp.Auth.logout();
+            });
+        });
+        
+        // Filtres
+        function initFiltres() {
+            document.getElementById('filterAnnee').addEventListener('change', filtrerFactures);
+            document.getElementById('filterStatut').addEventListener('change', filtrerFactures);
+        }
+        
+        function filtrerFactures() {
+            const annee = document.getElementById('filterAnnee').value;
+            const statut = document.getElementById('filterStatut').value;
+            
+            const factures = document.querySelectorAll('.facture-card');
+            
+            factures.forEach(facture => {
+                const factureAnnee = facture.dataset.annee || '2026';
+                const factureStatut = facture.dataset.status;
+                
+                let visible = true;
+                
+                // Filtre année
+                if (annee && factureAnnee !== annee) {
+                    visible = false;
+                }
+                
+                // Filtre statut
+                if (statut && factureStatut !== statut) {
+                    visible = false;
+                }
+                
+                facture.style.display = visible ? 'block' : 'none';
+            });
+        }
+        
+        // Modal paiement
+        function ouvrirPaiement() {
+            document.getElementById('modalPaiement').classList.remove('hidden');
+        }
+        
+        function fermerModal() {
+            document.querySelectorAll('.modal-overlay').forEach(m => {
+                m.classList.add('hidden');
+            });
+        }
+        
+        // Procéder au paiement
+        function procederPaiement() {
+            const methode = document.querySelector('input[name="methodePaiement"]:checked').value;
+            
+            // Simuler paiement (mode démo)
+            W2KApp.Notifications.show('Redirection vers ' + getMethodeName(methode) + '...', 'info');
+            
+            setTimeout(function() {
+                // En production: intégration FineoPay
+                // FineoPayAPI.initPayment({ amount: 850000, method: methode })
+                
+                W2KApp.Notifications.show('Mode démonstration - Paiement simulé', 'success');
+                fermerModal();
+            }, 2000);
+        }
+        
+        function getMethodeName(methode) {
+            const noms = {
+                'orange-money': 'Orange Money',
+                'mtn-money': 'MTN Mobile Money',
+                'moov-money': 'Moov Money',
+                'virement': 'Virement bancaire'
+            };
+            return noms[methode] || methode;
+        }
+        
+        // Télécharger facture PDF
+        function telechargerFacture(id) {
+            // En production: générer et télécharger PDF
+            W2KApp.Notifications.show('Téléchargement de la facture...', 'info');
+            
+            setTimeout(function() {
+                W2KApp.Notifications.show('Facture téléchargée (mode démo)', 'success');
+            }, 1500);
+        }
+        
+        // Fermer modal au clic extérieur
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    fermerModal();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
