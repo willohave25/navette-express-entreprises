@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1B2A4A">
+    <meta name="description" content="Créer un nouveau corridor de transport - Navette Express Entreprise">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <title>Créer un corridor | Navette Express Entreprise</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="images/logo/favicon.png">
+    <link rel="apple-touch-icon" href="images/logo/apple-touch-icon.png">
+    
+    <!-- Google Fonts Montserrat -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="css/app.css">
+</head>
+<body class="page-creer-corridor">
+    
+    <!-- Header fixe -->
+    <header class="wizard-header">
+        <a href="corridors.html" class="wizard-back-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15 18 9 12 15 6"/>
+            </svg>
+        </a>
+        <h1 class="wizard-title">Nouveau corridor</h1>
+        <button type="button" class="wizard-close-btn" onclick="confirmerAnnulation()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+        </button>
+    </header>
+    
+    <!-- Indicateur d'étapes -->
+    <div class="wizard-progress">
+        <div class="progress-steps">
+            <div class="progress-step active" data-step="1">
+                <div class="step-circle">1</div>
+                <span class="step-label">Zone</span>
+            </div>
+            <div class="progress-line"></div>
+            <div class="progress-step" data-step="2">
+                <div class="step-circle">2</div>
+                <span class="step-label">Destination</span>
+            </div>
+            <div class="progress-line"></div>
+            <div class="progress-step" data-step="3">
+                <div class="step-circle">3</div>
+                <span class="step-label">Horaires</span>
+            </div>
+            <div class="progress-line"></div>
+            <div class="progress-step" data-step="4">
+                <div class="step-circle">4</div>
+                <span class="step-label">Options</span>
+            </div>
+            <div class="progress-line"></div>
+            <div class="progress-step" data-step="5">
+                <div class="step-circle">5</div>
+                <span class="step-label">Résumé</span>
+            </div>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-bar-fill" id="progressFill" style="width: 20%"></div>
+        </div>
+    </div>
+    
+    <!-- Contenu Wizard -->
+    <main class="wizard-content">
+        <form id="corridorForm" class="wizard-form">
+            
+            <!-- Étape 1: Zone de départ -->
+            <section class="wizard-step active" data-step="1">
+                <div class="step-header">
+                    <h2 class="step-title">Zone de départ</h2>
+                    <p class="step-subtitle">Où vos employés seront-ils pris en charge ?</p>
+                </div>
+                
+                <div class="step-content">
+                    <div class="form-group">
+                        <label for="zoneDepart" class="form-label">Commune / Quartier de départ</label>
+                        <div class="select-wrapper">
+                            <select id="zoneDepart" name="zoneDepart" class="form-select" required>
+                                <option value="">Sélectionnez une zone</option>
+                                <optgroup label="Abidjan Nord">
+                                    <option value="abobo">Abobo</option>
+                                    <option value="adjame">Adjamé</option>
+                                    <option value="attecoube">Attécoubé</option>
+                                    <option value="yopougon">Yopougon</option>
+                                </optgroup>
+                                <optgroup label="Abidjan Sud">
+                                    <option value="cocody">Cocody</option>
+                                    <option value="plateau">Plateau</option>
+                                    <option value="marcory">Marcory</option>
+                                    <option value="koumassi">Koumassi</option>
+                                    <option value="treichville">Treichville</option>
+                                    <option value="port-bouet">Port-Bouët</option>
+                                </optgroup>
+                                <optgroup label="Périphérie">
+                                    <option value="bingerville">Bingerville</option>
+                                    <option value="anyama">Anyama</option>
+                                    <option value="songon">Songon</option>
+                                    <option value="grand-bassam">Grand-Bassam</option>
+                                </optgroup>
+                            </select>
+                            <svg class="select-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"/>
+                            </svg>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="quartierDepart" class="form-label">Précisez le quartier (optionnel)</label>
+                        <input type="text" id="quartierDepart" name="quartierDepart" class="form-input" placeholder="Ex: Angré 8ème tranche, Toits Rouges...">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Point de ramassage</label>
+                        <div class="radio-cards">
+                            <label class="radio-card">
+                                <input type="radio" name="typeRamassage" value="unique" checked>
+                                <div class="radio-card-content">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                                        <circle cx="12" cy="10" r="3"/>
+                                    </svg>
+                                    <span class="radio-card-title">Point unique</span>
+                                    <span class="radio-card-desc">Un seul arrêt de ramassage</span>
+                                </div>
+                            </label>
+                            <label class="radio-card">
+                                <input type="radio" name="typeRamassage" value="multiple">
+                                <div class="radio-card-content">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="6" cy="6" r="3"/>
+                                        <circle cx="6" cy="18" r="3"/>
+                                        <circle cx="18" cy="12" r="3"/>
+                                        <line x1="8.59" y1="7.41" x2="15.42" y2="10.59"/>
+                                        <line x1="8.59" y1="16.59" x2="15.42" y2="13.41"/>
+                                    </svg>
+                                    <span class="radio-card-title">Multi-arrêts</span>
+                                    <span class="radio-card-desc">Plusieurs points de ramassage</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Étape 2: Destination -->
+            <section class="wizard-step" data-step="2">
+                <div class="step-header">
+                    <h2 class="step-title">Destination</h2>
+                    <p class="step-subtitle">Où vos employés doivent-ils être déposés ?</p>
+                </div>
+                
+                <div class="step-content">
+                    <div class="form-group">
+                        <label for="zoneDestination" class="form-label">Commune / Zone de destination</label>
+                        <div class="select-wrapper">
+                            <select id="zoneDestination" name="zoneDestination" class="form-select" required>
+                                <option value="">Sélectionnez une zone</option>
+                                <optgroup label="Zones d'affaires">
+                                    <option value="plateau">Plateau (Centre administratif)</option>
+                                    <option value="cocody-ambassades">Cocody Ambassades</option>
+                                    <option value="marcory-zone4">Marcory Zone 4</option>
+                                </optgroup>
+                                <optgroup label="Zones industrielles">
+                                    <option value="vridi">Zone Industrielle Vridi</option>
+                                    <option value="yopougon-industrie">Zone Industrielle Yopougon</option>
+                                    <option value="pca">PCA (Port)</option>
+                                </optgroup>
+                                <optgroup label="Autres">
+                                    <option value="aeroport">Aéroport FHB</option>
+                                    <option value="cocody-riviera">Cocody Riviera</option>
+                                    <option value="marcory-residential">Marcory Résidentiel</option>
+                                    <option value="treichville">Treichville</option>
+                                </optgroup>
+                            </select>
+                            <svg class="select-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"/>
+                            </svg>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="adresseDestination" class="form-label">Adresse précise de destination</label>
+                        <input type="text" id="adresseDestination" name="adresseDestination" class="form-input" placeholder="Ex: Immeuble CCIA, Rue des Banques..." required>
+                    </div>
+                    
+                    <div class="info-card">
+                        <div class="info-card-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="12" y1="16" x2="12" y2="12"/>
+                                <line x1="12" y1="8" x2="12.01" y2="8"/>
+                            </svg>
+                        </div>
+                        <div class="info-card-content">
+                            <span class="info-card-title">Distance estimée</span>
+                            <span class="info-card-value" id="distanceEstimee">-- km</span>
+                            <span class="info-card-note">Sera calculée après sélection des zones</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Étape 3: Horaires -->
+            <section class="wizard-step" data-step="3">
+                <div class="step-header">
+                    <h2 class="step-title">Horaires de service</h2>
+                    <p class="step-subtitle">Définissez les heures de trajet aller et retour</p>
+                </div>
+                
+                <div class="step-content">
+                    <div class="horaires-grid">
+                        <div class="horaire-card">
+                            <div class="horaire-header">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="5"/>
+                                    <line x1="12" y1="1" x2="12" y2="3"/>
+                                    <line x1="12" y1="21" x2="12" y2="23"/>
+                                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                                    <line x1="1" y1="12" x2="3" y2="12"/>
+                                    <line x1="21" y1="12" x2="23" y2="12"/>
+                                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                                </svg>
+                                <span>Trajet ALLER</span>
+                            </div>
+                            <div class="form-group">
+                                <label for="heureAller" class="form-label">Heure de départ</label>
+                                <input type="time" id="heureAller" name="heureAller" class="form-input form-input-time" value="07:00" required>
+                            </div>
+                            <p class="horaire-note">Heure de départ du point de ramassage</p>
+                        </div>
+                        
+                        <div class="horaire-card">
+                            <div class="horaire-header">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                                </svg>
+                                <span>Trajet RETOUR</span>
+                            </div>
+                            <div class="form-group">
+                                <label for="heureRetour" class="form-label">Heure de départ</label>
+                                <input type="time" id="heureRetour" name="heureRetour" class="form-input form-input-time" value="18:00" required>
+                            </div>
+                            <p class="horaire-note">Heure de départ de la destination</p>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Jours de service</label>
+                        <div class="days-selector">
+                            <label class="day-checkbox">
+                                <input type="checkbox" name="jours" value="lundi" checked>
+                                <span class="day-label">Lun</span>
+                            </label>
+                            <label class="day-checkbox">
+                                <input type="checkbox" name="jours" value="mardi" checked>
+                                <span class="day-label">Mar</span>
+                            </label>
+                            <label class="day-checkbox">
+                                <input type="checkbox" name="jours" value="mercredi" checked>
+                                <span class="day-label">Mer</span>
+                            </label>
+                            <label class="day-checkbox">
+                                <input type="checkbox" name="jours" value="jeudi" checked>
+                                <span class="day-label">Jeu</span>
+                            </label>
+                            <label class="day-checkbox">
+                                <input type="checkbox" name="jours" value="vendredi" checked>
+                                <span class="day-label">Ven</span>
+                            </label>
+                            <label class="day-checkbox">
+                                <input type="checkbox" name="jours" value="samedi">
+                                <span class="day-label">Sam</span>
+                            </label>
+                            <label class="day-checkbox">
+                                <input type="checkbox" name="jours" value="dimanche">
+                                <span class="day-label">Dim</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Étape 4: Options -->
+            <section class="wizard-step" data-step="4">
+                <div class="step-header">
+                    <h2 class="step-title">Options du service</h2>
+                    <p class="step-subtitle">Personnalisez votre corridor selon vos besoins</p>
+                </div>
+                
+                <div class="step-content">
+                    <div class="form-group">
+                        <label for="nombreEmployes" class="form-label">Nombre d'employés à transporter</label>
+                        <div class="number-input-wrapper">
+                            <button type="button" class="number-btn" onclick="ajusterNombre('nombreEmployes', -5)">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="5" y1="12" x2="19" y2="12"/>
+                                </svg>
+                            </button>
+                            <input type="number" id="nombreEmployes" name="nombreEmployes" class="form-input number-input" value="20" min="5" max="200" required>
+                            <button type="button" class="number-btn" onclick="ajusterNombre('nombreEmployes', 5)">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="12" y1="5" x2="12" y2="19"/>
+                                    <line x1="5" y1="12" x2="19" y2="12"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Type de véhicule souhaité</label>
+                        <div class="vehicle-options">
+                            <label class="vehicle-card">
+                                <input type="radio" name="typeVehicule" value="minibus" checked>
+                                <div class="vehicle-card-content">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <rect x="1" y="6" width="22" height="12" rx="2"/>
+                                        <circle cx="6" cy="18" r="2"/>
+                                        <circle cx="18" cy="18" r="2"/>
+                                        <line x1="8" y1="6" x2="8" y2="12"/>
+                                        <line x1="16" y1="6" x2="16" y2="12"/>
+                                    </svg>
+                                    <span class="vehicle-name">Minibus</span>
+                                    <span class="vehicle-capacity">15-25 places</span>
+                                </div>
+                            </label>
+                            <label class="vehicle-card">
+                                <input type="radio" name="typeVehicule" value="bus">
+                                <div class="vehicle-card-content">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <rect x="1" y="4" width="22" height="14" rx="2"/>
+                                        <circle cx="6" cy="18" r="2"/>
+                                        <circle cx="18" cy="18" r="2"/>
+                                        <line x1="6" y1="4" x2="6" y2="10"/>
+                                        <line x1="10" y1="4" x2="10" y2="10"/>
+                                        <line x1="14" y1="4" x2="14" y2="10"/>
+                                        <line x1="18" y1="4" x2="18" y2="10"/>
+                                    </svg>
+                                    <span class="vehicle-name">Bus standard</span>
+                                    <span class="vehicle-capacity">30-50 places</span>
+                                </div>
+                            </label>
+                            <label class="vehicle-card">
+                                <input type="radio" name="typeVehicule" value="bus-luxe">
+                                <div class="vehicle-card-content">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <rect x="1" y="4" width="22" height="14" rx="3"/>
+                                        <circle cx="6" cy="18" r="2"/>
+                                        <circle cx="18" cy="18" r="2"/>
+                                        <path d="M4 10h16"/>
+                                        <path d="M7 7h2"/>
+                                        <path d="M15 7h2"/>
+                                    </svg>
+                                    <span class="vehicle-name">Bus VIP</span>
+                                    <span class="vehicle-capacity">Climatisé premium</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Options supplémentaires</label>
+                        <div class="options-list">
+                            <label class="option-checkbox">
+                                <input type="checkbox" name="options" value="wifi">
+                                <span class="option-checkmark">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"/>
+                                    </svg>
+                                </span>
+                                <div class="option-content">
+                                    <span class="option-title">WiFi à bord</span>
+                                    <span class="option-price">+15 000 FCFA/mois</span>
+                                </div>
+                            </label>
+                            <label class="option-checkbox">
+                                <input type="checkbox" name="options" value="climatisation" checked>
+                                <span class="option-checkmark">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"/>
+                                    </svg>
+                                </span>
+                                <div class="option-content">
+                                    <span class="option-title">Climatisation</span>
+                                    <span class="option-price">Inclus</span>
+                                </div>
+                            </label>
+                            <label class="option-checkbox">
+                                <input type="checkbox" name="options" value="suivi-gps" checked>
+                                <span class="option-checkmark">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"/>
+                                    </svg>
+                                </span>
+                                <div class="option-content">
+                                    <span class="option-title">Suivi GPS temps réel</span>
+                                    <span class="option-price">Inclus</span>
+                                </div>
+                            </label>
+                            <label class="option-checkbox">
+                                <input type="checkbox" name="options" value="assurance-premium">
+                                <span class="option-checkmark">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"/>
+                                    </svg>
+                                </span>
+                                <div class="option-content">
+                                    <span class="option-title">Assurance premium</span>
+                                    <span class="option-price">+25 000 FCFA/mois</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Étape 5: Résumé -->
+            <section class="wizard-step" data-step="5">
+                <div class="step-header">
+                    <h2 class="step-title">Récapitulatif</h2>
+                    <p class="step-subtitle">Vérifiez les détails de votre corridor</p>
+                </div>
+                
+                <div class="step-content">
+                    <div class="summary-card">
+                        <div class="summary-route">
+                            <div class="summary-point summary-start">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <circle cx="12" cy="12" r="6"/>
+                                </svg>
+                                <div class="summary-point-info">
+                                    <span class="summary-label">Départ</span>
+                                    <span class="summary-value" id="summaryDepart">-</span>
+                                </div>
+                            </div>
+                            <div class="summary-line">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="1" y="3" width="15" height="13"/>
+                                    <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+                                    <circle cx="5.5" cy="18.5" r="2.5"/>
+                                    <circle cx="18.5" cy="18.5" r="2.5"/>
+                                </svg>
+                            </div>
+                            <div class="summary-point summary-end">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                                    <circle cx="12" cy="10" r="3"/>
+                                </svg>
+                                <div class="summary-point-info">
+                                    <span class="summary-label">Destination</span>
+                                    <span class="summary-value" id="summaryDestination">-</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="summary-details">
+                            <div class="summary-detail">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12 6 12 12 16 14"/>
+                                </svg>
+                                <div class="summary-detail-content">
+                                    <span class="summary-detail-label">Horaires</span>
+                                    <span class="summary-detail-value" id="summaryHoraires">-</span>
+                                </div>
+                            </div>
+                            <div class="summary-detail">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                    <line x1="16" y1="2" x2="16" y2="6"/>
+                                    <line x1="8" y1="2" x2="8" y2="6"/>
+                                    <line x1="3" y1="10" x2="21" y2="10"/>
+                                </svg>
+                                <div class="summary-detail-content">
+                                    <span class="summary-detail-label">Jours</span>
+                                    <span class="summary-detail-value" id="summaryJours">-</span>
+                                </div>
+                            </div>
+                            <div class="summary-detail">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="9" cy="7" r="4"/>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                </svg>
+                                <div class="summary-detail-content">
+                                    <span class="summary-detail-label">Employés</span>
+                                    <span class="summary-detail-value" id="summaryEmployes">-</span>
+                                </div>
+                            </div>
+                            <div class="summary-detail">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="1" y="3" width="15" height="13"/>
+                                    <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+                                    <circle cx="5.5" cy="18.5" r="2.5"/>
+                                    <circle cx="18.5" cy="18.5" r="2.5"/>
+                                </svg>
+                                <div class="summary-detail-content">
+                                    <span class="summary-detail-label">Véhicule</span>
+                                    <span class="summary-detail-value" id="summaryVehicule">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="cost-card">
+                        <div class="cost-header">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="1" x2="12" y2="23"/>
+                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                            </svg>
+                            <span>Coût estimé mensuel</span>
+                        </div>
+                        <div class="cost-value" id="summaryCoût">250 000 FCFA</div>
+                        <p class="cost-note">* Estimation basée sur vos sélections. Le tarif définitif sera confirmé par notre équipe.</p>
+                    </div>
+                    
+                    <div class="terms-checkbox">
+                        <label class="checkbox-wrapper">
+                            <input type="checkbox" id="acceptTerms" required>
+                            <span class="checkmark">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                            </span>
+                            <span class="checkbox-label">
+                                J'accepte les <a href="#" class="link">conditions générales</a> et la <a href="#" class="link">politique tarifaire</a>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+            
+        </form>
+    </main>
+    
+    <!-- Footer fixe avec boutons -->
+    <footer class="wizard-footer">
+        <button type="button" class="btn btn-outline" id="btnPrevious" onclick="previousStep()" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15 18 9 12 15 6"/>
+            </svg>
+            Précédent
+        </button>
+        <button type="button" class="btn btn-primary" id="btnNext" onclick="nextStep()">
+            Suivant
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 18 15 12 9 6"/>
+            </svg>
+        </button>
+        <button type="submit" class="btn btn-primary btn-success hidden" id="btnSubmit" onclick="submitCorridor(event)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            Créer le corridor
+        </button>
+    </footer>
+    
+    <!-- Modal confirmation annulation -->
+    <div class="modal-overlay hidden" id="modalAnnulation">
+        <div class="modal">
+            <div class="modal-icon modal-icon-warning">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/>
+                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+            </div>
+            <h3 class="modal-title">Annuler la création ?</h3>
+            <p class="modal-text">Toutes les informations saisies seront perdues.</p>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-outline" onclick="fermerModal()">Continuer</button>
+                <button type="button" class="btn btn-danger" onclick="annulerCreation()">Annuler</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal succès -->
+    <div class="modal-overlay hidden" id="modalSucces">
+        <div class="modal">
+            <div class="modal-icon modal-icon-success">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+            </div>
+            <h3 class="modal-title">Corridor créé avec succès !</h3>
+            <p class="modal-text">Votre demande a été enregistrée. Notre équipe vous contactera sous 24h pour confirmer les détails.</p>
+            <div class="modal-actions">
+                <a href="corridors.html" class="btn btn-primary">Voir mes corridors</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="js/supabase-config.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        // Variables globales
+        let currentStep = 1;
+        const totalSteps = 5;
+        
+        // Données du corridor
+        const corridorData = {
+            zoneDepart: '',
+            quartierDepart: '',
+            typeRamassage: 'unique',
+            zoneDestination: '',
+            adresseDestination: '',
+            heureAller: '07:00',
+            heureRetour: '18:00',
+            jours: ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi'],
+            nombreEmployes: 20,
+            typeVehicule: 'minibus',
+            options: ['climatisation', 'suivi-gps']
+        };
+        
+        // Tarifs de base par zone (FCFA/mois)
+        const tarifsBase = {
+            'abobo-plateau': 200000,
+            'yopougon-vridi': 280000,
+            'cocody-plateau': 150000,
+            'marcory-plateau': 120000,
+            'default': 180000
+        };
+        
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Vérifier authentification
+            const entrepriseData = W2KApp.Utils.storage.get('entreprise');
+            if (!entrepriseData) {
+                window.location.href = 'connexion.html';
+                return;
+            }
+            
+            // Initialiser les écouteurs
+            initFormListeners();
+            
+            // Afficher étape 1
+            showStep(1);
+        });
+        
+        // Écouteurs formulaire
+        function initFormListeners() {
+            // Zone départ
+            document.getElementById('zoneDepart').addEventListener('change', function() {
+                corridorData.zoneDepart = this.value;
+                updateDistanceEstimee();
+            });
+            
+            document.getElementById('quartierDepart').addEventListener('input', function() {
+                corridorData.quartierDepart = this.value;
+            });
+            
+            // Type ramassage
+            document.querySelectorAll('input[name="typeRamassage"]').forEach(input => {
+                input.addEventListener('change', function() {
+                    corridorData.typeRamassage = this.value;
+                });
+            });
+            
+            // Zone destination
+            document.getElementById('zoneDestination').addEventListener('change', function() {
+                corridorData.zoneDestination = this.value;
+                updateDistanceEstimee();
+            });
+            
+            document.getElementById('adresseDestination').addEventListener('input', function() {
+                corridorData.adresseDestination = this.value;
+            });
+            
+            // Horaires
+            document.getElementById('heureAller').addEventListener('change', function() {
+                corridorData.heureAller = this.value;
+            });
+            
+            document.getElementById('heureRetour').addEventListener('change', function() {
+                corridorData.heureRetour = this.value;
+            });
+            
+            // Jours
+            document.querySelectorAll('input[name="jours"]').forEach(input => {
+                input.addEventListener('change', function() {
+                    if (this.checked) {
+                        if (!corridorData.jours.includes(this.value)) {
+                            corridorData.jours.push(this.value);
+                        }
+                    } else {
+                        corridorData.jours = corridorData.jours.filter(j => j !== this.value);
+                    }
+                });
+            });
+            
+            // Nombre employés
+            document.getElementById('nombreEmployes').addEventListener('change', function() {
+                corridorData.nombreEmployes = parseInt(this.value) || 20;
+            });
+            
+            // Type véhicule
+            document.querySelectorAll('input[name="typeVehicule"]').forEach(input => {
+                input.addEventListener('change', function() {
+                    corridorData.typeVehicule = this.value;
+                });
+            });
+            
+            // Options
+            document.querySelectorAll('input[name="options"]').forEach(input => {
+                input.addEventListener('change', function() {
+                    if (this.checked) {
+                        if (!corridorData.options.includes(this.value)) {
+                            corridorData.options.push(this.value);
+                        }
+                    } else {
+                        corridorData.options = corridorData.options.filter(o => o !== this.value);
+                    }
+                });
+            });
+        }
+        
+        // Navigation étapes
+        function showStep(step) {
+            // Cacher toutes les étapes
+            document.querySelectorAll('.wizard-step').forEach(s => {
+                s.classList.remove('active');
+            });
+            
+            // Afficher étape courante
+            document.querySelector(`.wizard-step[data-step="${step}"]`).classList.add('active');
+            
+            // Mettre à jour indicateurs
+            document.querySelectorAll('.progress-step').forEach(s => {
+                const stepNum = parseInt(s.dataset.step);
+                s.classList.remove('active', 'completed');
+                if (stepNum === step) {
+                    s.classList.add('active');
+                } else if (stepNum < step) {
+                    s.classList.add('completed');
+                }
+            });
+            
+            // Mettre à jour barre de progression
+            const progress = (step / totalSteps) * 100;
+            document.getElementById('progressFill').style.width = `${progress}%`;
+            
+            // Gérer boutons
+            document.getElementById('btnPrevious').disabled = step === 1;
+            
+            if (step === totalSteps) {
+                document.getElementById('btnNext').classList.add('hidden');
+                document.getElementById('btnSubmit').classList.remove('hidden');
+                updateSummary();
+            } else {
+                document.getElementById('btnNext').classList.remove('hidden');
+                document.getElementById('btnSubmit').classList.add('hidden');
+            }
+            
+            currentStep = step;
+        }
+        
+        function nextStep() {
+            if (validateCurrentStep()) {
+                if (currentStep < totalSteps) {
+                    showStep(currentStep + 1);
+                }
+            }
+        }
+        
+        function previousStep() {
+            if (currentStep > 1) {
+                showStep(currentStep - 1);
+            }
+        }
+        
+        // Validation étape
+        function validateCurrentStep() {
+            const step = document.querySelector(`.wizard-step[data-step="${currentStep}"]`);
+            const requiredInputs = step.querySelectorAll('[required]');
+            let isValid = true;
+            
+            requiredInputs.forEach(input => {
+                if (!input.value.trim()) {
+                    isValid = false;
+                    input.classList.add('error');
+                    
+                    // Retirer l'erreur après modification
+                    input.addEventListener('input', function() {
+                        this.classList.remove('error');
+                    }, { once: true });
+                }
+            });
+            
+            if (!isValid) {
+                W2KApp.Notifications.show('Veuillez remplir tous les champs obligatoires', 'error');
+            }
+            
+            return isValid;
+        }
+        
+        // Mettre à jour distance estimée
+        function updateDistanceEstimee() {
+            const depart = corridorData.zoneDepart;
+            const destination = corridorData.zoneDestination;
+            
+            if (depart && destination) {
+                // Estimation simplifiée
+                const distances = {
+                    'yopougon-vridi': 30,
+                    'abobo-plateau': 25,
+                    'cocody-plateau': 10,
+                    'marcory-plateau': 8,
+                    'default': 20
+                };
+                
+                const key = `${depart}-${destination}`;
+                const distance = distances[key] || distances['default'];
+                
+                document.getElementById('distanceEstimee').textContent = `~${distance} km`;
+            }
+        }
+        
+        // Ajuster nombre
+        function ajusterNombre(inputId, delta) {
+            const input = document.getElementById(inputId);
+            let value = parseInt(input.value) || 0;
+            value += delta;
+            
+            const min = parseInt(input.min) || 0;
+            const max = parseInt(input.max) || 999;
+            
+            value = Math.max(min, Math.min(max, value));
+            input.value = value;
+            
+            corridorData.nombreEmployes = value;
+        }
+        
+        // Mettre à jour résumé
+        function updateSummary() {
+            // Zones
+            const zoneDepartSelect = document.getElementById('zoneDepart');
+            const zoneDestSelect = document.getElementById('zoneDestination');
+            
+            const departText = zoneDepartSelect.options[zoneDepartSelect.selectedIndex]?.text || '-';
+            const quartier = corridorData.quartierDepart ? ` (${corridorData.quartierDepart})` : '';
+            document.getElementById('summaryDepart').textContent = departText + quartier;
+            
+            const destText = zoneDestSelect.options[zoneDestSelect.selectedIndex]?.text || '-';
+            const adresse = corridorData.adresseDestination ? ` - ${corridorData.adresseDestination}` : '';
+            document.getElementById('summaryDestination').textContent = destText + adresse;
+            
+            // Horaires
+            document.getElementById('summaryHoraires').textContent = 
+                `Aller ${corridorData.heureAller} / Retour ${corridorData.heureRetour}`;
+            
+            // Jours
+            const joursMap = {
+                'lundi': 'Lun',
+                'mardi': 'Mar',
+                'mercredi': 'Mer',
+                'jeudi': 'Jeu',
+                'vendredi': 'Ven',
+                'samedi': 'Sam',
+                'dimanche': 'Dim'
+            };
+            const joursText = corridorData.jours.map(j => joursMap[j]).join(', ');
+            document.getElementById('summaryJours').textContent = joursText || '-';
+            
+            // Employés
+            document.getElementById('summaryEmployes').textContent = `${corridorData.nombreEmployes} personnes`;
+            
+            // Véhicule
+            const vehiculeMap = {
+                'minibus': 'Minibus (15-25 places)',
+                'bus': 'Bus standard (30-50 places)',
+                'bus-luxe': 'Bus VIP climatisé'
+            };
+            document.getElementById('summaryVehicule').textContent = vehiculeMap[corridorData.typeVehicule] || '-';
+            
+            // Coût estimé
+            const cout = calculerCout();
+            document.getElementById('summaryCoût').textContent = W2KApp.Utils.formatFCFA(cout);
+        }
+        
+        // Calculer coût
+        function calculerCout() {
+            let base = tarifsBase['default'];
+            
+            // Ajuster selon distance (simplifié)
+            const key = `${corridorData.zoneDepart}-${corridorData.zoneDestination}`;
+            if (tarifsBase[key]) {
+                base = tarifsBase[key];
+            }
+            
+            // Ajuster selon nombre d'employés
+            if (corridorData.nombreEmployes > 30) {
+                base *= 1.3;
+            } else if (corridorData.nombreEmployes > 50) {
+                base *= 1.5;
+            }
+            
+            // Ajuster selon véhicule
+            if (corridorData.typeVehicule === 'bus') {
+                base *= 1.2;
+            } else if (corridorData.typeVehicule === 'bus-luxe') {
+                base *= 1.5;
+            }
+            
+            // Ajouter options
+            if (corridorData.options.includes('wifi')) {
+                base += 15000;
+            }
+            if (corridorData.options.includes('assurance-premium')) {
+                base += 25000;
+            }
+            
+            return Math.round(base / 1000) * 1000; // Arrondir aux 1000
+        }
+        
+        // Soumettre corridor
+        function submitCorridor(event) {
+            event.preventDefault();
+            
+            // Vérifier conditions acceptées
+            if (!document.getElementById('acceptTerms').checked) {
+                W2KApp.Notifications.show('Veuillez accepter les conditions générales', 'error');
+                return;
+            }
+            
+            // Simuler envoi (mode démo)
+            const btnSubmit = document.getElementById('btnSubmit');
+            btnSubmit.disabled = true;
+            btnSubmit.innerHTML = `
+                <svg class="spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                </svg>
+                Création en cours...
+            `;
+            
+            setTimeout(function() {
+                // En production, appeler SupabaseAPI.createCorridor(corridorData)
+                
+                // Afficher modal succès
+                document.getElementById('modalSucces').classList.remove('hidden');
+                
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = `
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                    Créer le corridor
+                `;
+            }, 2000);
+        }
+        
+        // Modals
+        function confirmerAnnulation() {
+            document.getElementById('modalAnnulation').classList.remove('hidden');
+        }
+        
+        function fermerModal() {
+            document.querySelectorAll('.modal-overlay').forEach(m => {
+                m.classList.add('hidden');
+            });
+        }
+        
+        function annulerCreation() {
+            window.location.href = 'corridors.html';
+        }
+        
+        // Fermer modal au clic extérieur
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    fermerModal();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
