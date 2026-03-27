@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1B2A4A">
+    <meta name="description" content="Tableau de bord entreprise Navette Express - Gérez vos corridors et employés">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <title>Dashboard | Navette Express Entreprise</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="images/logo/favicon.png">
+    <link rel="apple-touch-icon" href="images/logo/apple-touch-icon.png">
+    
+    <!-- Google Fonts Montserrat -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="css/app.css">
+</head>
+<body class="page-dashboard">
+    
+    <!-- Sidebar Desktop/Tablette -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="dashboard.html" class="sidebar-logo">
+                <picture>
+                    <source srcset="images/logo/logo-jaebets.webp" type="image/webp">
+                    <img src="images/logo/logo-jaebets.png" alt="JAEBETS HOLDING" loading="lazy">
+                </picture>
+            </a>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="sidebar-link active" data-page="dashboard">
+                <!-- Icône Dashboard -->
+                <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7" rx="1"/>
+                    <rect x="14" y="3" width="7" height="7" rx="1"/>
+                    <rect x="3" y="14" width="7" height="7" rx="1"/>
+                    <rect x="14" y="14" width="7" height="7" rx="1"/>
+                </svg>
+                <span>Dashboard</span>
+            </a>
+            
+            <a href="corridors.html" class="sidebar-link" data-page="corridors">
+                <!-- Icône Corridors -->
+                <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
+                    <line x1="4" y1="22" x2="4" y2="15"/>
+                    <circle cx="18" cy="18" r="3"/>
+                    <path d="M18 15v-2"/>
+                </svg>
+                <span>Corridors</span>
+            </a>
+            
+            <a href="employes.html" class="sidebar-link" data-page="employes">
+                <!-- Icône Employés -->
+                <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                <span>Employés</span>
+            </a>
+            
+            <a href="facturation.html" class="sidebar-link" data-page="facturation">
+                <!-- Icône Facturation -->
+                <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                    <polyline points="10 9 9 9 8 9"/>
+                </svg>
+                <span>Factures</span>
+            </a>
+            
+            <a href="profil.html" class="sidebar-link" data-page="profil">
+                <!-- Icône Profil Entreprise -->
+                <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 21h18"/>
+                    <path d="M9 8h1"/>
+                    <path d="M9 12h1"/>
+                    <path d="M9 16h1"/>
+                    <path d="M14 8h1"/>
+                    <path d="M14 12h1"/>
+                    <path d="M14 16h1"/>
+                    <path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"/>
+                </svg>
+                <span>Profil</span>
+            </a>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <a href="notifications.html" class="sidebar-link sidebar-link-small">
+                <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                </svg>
+                <span>Notifications</span>
+                <span class="notification-badge" id="notifBadge">3</span>
+            </a>
+            
+            <button class="sidebar-link sidebar-link-small btn-logout" id="btnLogout">
+                <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                    <polyline points="16 17 21 12 16 7"/>
+                    <line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+                <span>Déconnexion</span>
+            </button>
+        </div>
+    </aside>
+    
+    <!-- Contenu principal -->
+    <main class="main-content">
+        
+        <!-- Header mobile -->
+        <header class="mobile-header">
+            <div class="mobile-header-left">
+                <picture>
+                    <source srcset="images/logo/logo-jaebets.webp" type="image/webp">
+                    <img src="images/logo/logo-jaebets.png" alt="JAEBETS" class="mobile-logo" loading="lazy">
+                </picture>
+            </div>
+            <div class="mobile-header-right">
+                <a href="notifications.html" class="mobile-header-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                    </svg>
+                    <span class="notification-dot"></span>
+                </a>
+            </div>
+        </header>
+        
+        <!-- Contenu Dashboard -->
+        <div class="page-content">
+            
+            <!-- Section Bienvenue -->
+            <section class="dashboard-welcome">
+                <h1 class="welcome-title">Bienvenue, <span id="entrepriseNom">SONATRA CI</span></h1>
+                <p class="welcome-subtitle">Gérez le transport de vos équipes en temps réel</p>
+            </section>
+            
+            <!-- KPIs Cards -->
+            <section class="dashboard-kpis">
+                <div class="kpi-card">
+                    <div class="kpi-icon kpi-icon-corridors">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
+                            <line x1="4" y1="22" x2="4" y2="15"/>
+                        </svg>
+                    </div>
+                    <div class="kpi-content">
+                        <span class="kpi-value" id="kpiCorridors">3</span>
+                        <span class="kpi-label">Corridors actifs</span>
+                    </div>
+                </div>
+                
+                <div class="kpi-card">
+                    <div class="kpi-icon kpi-icon-employes">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                    </div>
+                    <div class="kpi-content">
+                        <span class="kpi-value" id="kpiEmployes">127</span>
+                        <span class="kpi-label">Employés inscrits</span>
+                    </div>
+                </div>
+                
+                <div class="kpi-card kpi-card-highlight">
+                    <div class="kpi-icon kpi-icon-depenses">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="1" x2="12" y2="23"/>
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                        </svg>
+                    </div>
+                    <div class="kpi-content">
+                        <span class="kpi-value kpi-value-fcfa" id="kpiDepenses">750 000</span>
+                        <span class="kpi-label">Dépenses mois en cours (FCFA)</span>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Alertes -->
+            <section class="dashboard-alerts" id="alertsSection">
+                <h2 class="section-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                        <line x1="12" y1="9" x2="12" y2="13"/>
+                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    </svg>
+                    Alertes
+                </h2>
+                
+                <div class="alerts-list">
+                    <div class="alert-item alert-warning">
+                        <div class="alert-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14 2 14 8 20 8"/>
+                                <line x1="12" y1="18" x2="12" y2="12"/>
+                                <line x1="12" y1="9" x2="12.01" y2="9"/>
+                            </svg>
+                        </div>
+                        <div class="alert-content">
+                            <span class="alert-title">Facture en attente de paiement</span>
+                            <span class="alert-description">Facture Mars 2026 - 750 000 FCFA</span>
+                        </div>
+                        <a href="facturation.html" class="alert-action">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="9 18 15 12 9 6"/>
+                            </svg>
+                        </a>
+                    </div>
+                    
+                    <div class="alert-item alert-info">
+                        <div class="alert-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                                <line x1="12" y1="11" x2="12" y2="17"/>
+                                <line x1="9" y1="14" x2="15" y2="14"/>
+                            </svg>
+                        </div>
+                        <div class="alert-content">
+                            <span class="alert-title">Nouvel employé en attente d'assignation</span>
+                            <span class="alert-description">Kouamé Jean-Pierre - Zone Cocody</span>
+                        </div>
+                        <a href="employes.html" class="alert-action">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="9 18 15 12 9 6"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Actions rapides -->
+            <section class="dashboard-actions">
+                <h2 class="section-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                    </svg>
+                    Actions rapides
+                </h2>
+                
+                <div class="actions-grid">
+                    <a href="creer-corridor.html" class="action-card action-card-primary">
+                        <div class="action-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="12" y1="8" x2="12" y2="16"/>
+                                <line x1="8" y1="12" x2="16" y2="12"/>
+                            </svg>
+                        </div>
+                        <span class="action-label">Créer un corridor</span>
+                    </a>
+                    
+                    <a href="employes.html?action=add" class="action-card">
+                        <div class="action-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                <circle cx="8.5" cy="7" r="4"/>
+                                <line x1="20" y1="8" x2="20" y2="14"/>
+                                <line x1="23" y1="11" x2="17" y2="11"/>
+                            </svg>
+                        </div>
+                        <span class="action-label">Ajouter des employés</span>
+                    </a>
+                    
+                    <a href="suivi-transport.html" class="action-card">
+                        <div class="action-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
+                                <circle cx="12" cy="12" r="2"/>
+                            </svg>
+                        </div>
+                        <span class="action-label">Suivre les bus en direct</span>
+                    </a>
+                </div>
+            </section>
+            
+            <!-- Aperçu Corridors actifs -->
+            <section class="dashboard-corridors">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="1" y="3" width="15" height="13"/>
+                            <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+                            <circle cx="5.5" cy="18.5" r="2.5"/>
+                            <circle cx="18.5" cy="18.5" r="2.5"/>
+                        </svg>
+                        Corridors actifs
+                    </h2>
+                    <a href="corridors.html" class="section-link">Voir tout</a>
+                </div>
+                
+                <div class="corridors-list">
+                    <!-- Corridor 1 -->
+                    <div class="corridor-card">
+                        <div class="corridor-header">
+                            <div class="corridor-badge corridor-badge-active">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                Actif
+                            </div>
+                            <span class="corridor-bus">Bus AB-1234-CI</span>
+                        </div>
+                        <div class="corridor-route">
+                            <div class="corridor-point corridor-point-start">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <circle cx="12" cy="12" r="8"/>
+                                </svg>
+                                <span>Cocody Angré</span>
+                            </div>
+                            <div class="corridor-line"></div>
+                            <div class="corridor-point corridor-point-end">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                                    <circle cx="12" cy="10" r="3"/>
+                                </svg>
+                                <span>Plateau Zone 4</span>
+                            </div>
+                        </div>
+                        <div class="corridor-info">
+                            <div class="corridor-stat">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="9" cy="7" r="4"/>
+                                </svg>
+                                <span>42 employés</span>
+                            </div>
+                            <div class="corridor-stat">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12 6 12 12 16 14"/>
+                                </svg>
+                                <span>07h00 / 18h00</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Corridor 2 -->
+                    <div class="corridor-card">
+                        <div class="corridor-header">
+                            <div class="corridor-badge corridor-badge-active">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                Actif
+                            </div>
+                            <span class="corridor-bus">Bus CD-5678-CI</span>
+                        </div>
+                        <div class="corridor-route">
+                            <div class="corridor-point corridor-point-start">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <circle cx="12" cy="12" r="8"/>
+                                </svg>
+                                <span>Yopougon Toits Rouges</span>
+                            </div>
+                            <div class="corridor-line"></div>
+                            <div class="corridor-point corridor-point-end">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                                    <circle cx="12" cy="10" r="3"/>
+                                </svg>
+                                <span>Zone Industrielle Vridi</span>
+                            </div>
+                        </div>
+                        <div class="corridor-info">
+                            <div class="corridor-stat">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="9" cy="7" r="4"/>
+                                </svg>
+                                <span>58 employés</span>
+                            </div>
+                            <div class="corridor-stat">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12 6 12 12 16 14"/>
+                                </svg>
+                                <span>06h30 / 17h30</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Corridor 3 -->
+                    <div class="corridor-card">
+                        <div class="corridor-header">
+                            <div class="corridor-badge corridor-badge-active">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                Actif
+                            </div>
+                            <span class="corridor-bus">Bus EF-9012-CI</span>
+                        </div>
+                        <div class="corridor-route">
+                            <div class="corridor-point corridor-point-start">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <circle cx="12" cy="12" r="8"/>
+                                </svg>
+                                <span>Marcory Résidentiel</span>
+                            </div>
+                            <div class="corridor-line"></div>
+                            <div class="corridor-point corridor-point-end">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                                    <circle cx="12" cy="10" r="3"/>
+                                </svg>
+                                <span>Plateau Cité Administrative</span>
+                            </div>
+                        </div>
+                        <div class="corridor-info">
+                            <div class="corridor-stat">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="9" cy="7" r="4"/>
+                                </svg>
+                                <span>27 employés</span>
+                            </div>
+                            <div class="corridor-stat">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12 6 12 12 16 14"/>
+                                </svg>
+                                <span>07h30 / 18h30</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Suivi rapide -->
+            <section class="dashboard-suivi">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
+                        </svg>
+                        Suivi en direct
+                    </h2>
+                    <a href="suivi-transport.html" class="section-link">Carte complète</a>
+                </div>
+                
+                <div class="suivi-card">
+                    <div class="suivi-map-placeholder">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                            <circle cx="12" cy="10" r="3"/>
+                        </svg>
+                        <span>Carte temps réel</span>
+                        <small>Google Maps à intégrer</small>
+                    </div>
+                    
+                    <div class="suivi-stats">
+                        <div class="suivi-stat">
+                            <div class="suivi-stat-icon suivi-stat-success">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="1" y="3" width="15" height="13"/>
+                                    <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+                                    <circle cx="5.5" cy="18.5" r="2.5"/>
+                                    <circle cx="18.5" cy="18.5" r="2.5"/>
+                                </svg>
+                            </div>
+                            <div class="suivi-stat-content">
+                                <span class="suivi-stat-value">3</span>
+                                <span class="suivi-stat-label">Bus en circulation</span>
+                            </div>
+                        </div>
+                        
+                        <div class="suivi-stat">
+                            <div class="suivi-stat-icon suivi-stat-info">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="9" cy="7" r="4"/>
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                            </div>
+                            <div class="suivi-stat-content">
+                                <span class="suivi-stat-value">118/127</span>
+                                <span class="suivi-stat-label">Employés embarqués</span>
+                            </div>
+                        </div>
+                        
+                        <div class="suivi-stat">
+                            <div class="suivi-stat-icon suivi-stat-highlight">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                    <polyline points="22 4 12 14.01 9 11.01"/>
+                                </svg>
+                            </div>
+                            <div class="suivi-stat-content">
+                                <span class="suivi-stat-value suivi-stat-value-highlight">93%</span>
+                                <span class="suivi-stat-label">Taux de présence</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+        </div>
+        
+        <!-- Bottom Navigation Mobile -->
+        <nav class="bottom-nav">
+            <a href="dashboard.html" class="bottom-nav-item active" data-page="dashboard">
+                <svg class="bottom-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7" rx="1"/>
+                    <rect x="14" y="3" width="7" height="7" rx="1"/>
+                    <rect x="3" y="14" width="7" height="7" rx="1"/>
+                    <rect x="14" y="14" width="7" height="7" rx="1"/>
+                </svg>
+                <span>Dashboard</span>
+            </a>
+            
+            <a href="corridors.html" class="bottom-nav-item" data-page="corridors">
+                <svg class="bottom-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
+                    <line x1="4" y1="22" x2="4" y2="15"/>
+                </svg>
+                <span>Corridors</span>
+            </a>
+            
+            <a href="employes.html" class="bottom-nav-item" data-page="employes">
+                <svg class="bottom-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                <span>Employés</span>
+            </a>
+            
+            <a href="facturation.html" class="bottom-nav-item" data-page="facturation">
+                <svg class="bottom-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                </svg>
+                <span>Factures</span>
+            </a>
+            
+            <a href="profil.html" class="bottom-nav-item" data-page="profil">
+                <svg class="bottom-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 21h18"/>
+                    <path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"/>
+                    <path d="M9 8h1"/>
+                    <path d="M9 12h1"/>
+                    <path d="M14 8h1"/>
+                    <path d="M14 12h1"/>
+                </svg>
+                <span>Profil</span>
+            </a>
+        </nav>
+        
+    </main>
+    
+    <!-- Bouton WhatsApp flottant -->
+    <a href="https://wa.me/2250703285359" target="_blank" rel="noopener" class="whatsapp-fab" title="Contacter le support">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+    </a>
+    
+    <!-- Scripts -->
+    <script src="js/supabase-config.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        // Initialisation Dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            // Vérifier authentification
+            const entrepriseData = W2KApp.Utils.storage.get('entreprise');
+            
+            if (!entrepriseData) {
+                // Rediriger vers connexion si pas authentifié
+                window.location.href = 'connexion.html';
+                return;
+            }
+            
+            // Afficher nom entreprise
+            const nomElement = document.getElementById('entrepriseNom');
+            if (nomElement && entrepriseData.nom) {
+                nomElement.textContent = entrepriseData.nom;
+            }
+            
+            // Initialiser navigation
+            W2KApp.Navigation.init();
+            
+            // Charger données dashboard (mode démo)
+            chargerDashboard();
+            
+            // Bouton déconnexion
+            const btnLogout = document.getElementById('btnLogout');
+            if (btnLogout) {
+                btnLogout.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    W2KApp.Auth.logout();
+                });
+            }
+        });
+        
+        // Charger données dashboard
+        async function chargerDashboard() {
+            try {
+                // Mode démo - données statiques
+                // En production, appeler SupabaseAPI.getCorridors(), etc.
+                
+                const demoData = {
+                    corridors: 3,
+                    employes: 127,
+                    depenses: 750000
+                };
+                
+                // Mettre à jour KPIs
+                document.getElementById('kpiCorridors').textContent = demoData.corridors;
+                document.getElementById('kpiEmployes').textContent = demoData.employes;
+                document.getElementById('kpiDepenses').textContent = W2KApp.Utils.formatFCFA(demoData.depenses).replace(' FCFA', '');
+                
+            } catch (error) {
+                console.error('Erreur chargement dashboard:', error);
+            }
+        }
+    </script>
+</body>
+</html>
