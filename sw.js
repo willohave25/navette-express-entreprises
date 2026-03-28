@@ -10,7 +10,7 @@ const OFFLINE_URL = '/erreur.html';
 /* Ressources à mettre en cache au premier chargement */
 const PRECACHE_ASSETS = [
   '/',
-  '/splash.html',
+  '/index.html',
   '/connexion.html',
   '/inscription.html',
   '/dashboard.html',
