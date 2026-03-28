@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1B2A4A">
+    <meta name="description" content="Détail de votre facture - Navette Express Entreprise">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <title>Détail Facture | Navette Express Entreprise</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="images/logo/favicon.png">
+    <link rel="apple-touch-icon" href="images/logo/apple-touch-icon.png">
+    
+    <!-- Google Fonts Montserrat -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="css/app.css">
+</head>
+<body class="page-detail-facture">
+    
+    <!-- Header fixe -->
+    <header class="wizard-header">
+        <a href="facturation.html" class="wizard-back-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15 18 9 12 15 6"/>
+            </svg>
+        </a>
+        <h1 class="wizard-title">Détail Facture</h1>
+        <button type="button" class="wizard-header-btn" onclick="telechargerPDF()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+        </button>
+    </header>
+    
+    <!-- Contenu principal -->
+    <main class="detail-facture-content">
+        
+        <!-- En-tête facture -->
+        <section class="facture-entete">
+            <div class="facture-logo">
+                <picture>
+                    <source srcset="images/logo/logo-jaebets.webp" type="image/webp">
+                    <img src="images/logo/logo-jaebets.png" alt="JAEBETS HOLDING" loading="lazy">
+                </picture>
+            </div>
+            
+            <div class="facture-titre">
+                <h2>FACTURE</h2>
+                <span class="facture-numero-detail" id="factureNumero">FAC-2026-003</span>
+            </div>
+            
+            <div class="facture-statut-badge" id="factureStatut">
+                <span class="status-badge status-en-attente">En attente</span>
+            </div>
+        </section>
+        
+        <!-- Informations entreprises -->
+        <section class="facture-parties">
+            <div class="facture-partie facture-emetteur">
+                <h3>Émetteur</h3>
+                <p class="partie-nom">JAEBETS HOLDING</p>
+                <p class="partie-adresse">Abidjan, Côte d'Ivoire</p>
+                <p class="partie-contact">+225 07 03 28 53 59</p>
+                <p class="partie-email">infos@jaebets-holding.com</p>
+            </div>
+            
+            <div class="facture-partie facture-client">
+                <h3>Facturé à</h3>
+                <p class="partie-nom" id="clientNom">ENTREPRISE DEMO</p>
+                <p class="partie-adresse" id="clientAdresse">Plateau, Abidjan</p>
+                <p class="partie-contact" id="clientContact">+225 07 00 00 00 00</p>
+                <p class="partie-email" id="clientEmail">contact@entreprise-demo.ci</p>
+            </div>
+        </section>
+        
+        <!-- Dates -->
+        <section class="facture-dates">
+            <div class="facture-date">
+                <span class="date-label">Date d'émission</span>
+                <span class="date-value" id="dateEmission">01/03/2026</span>
+            </div>
+            <div class="facture-date">
+                <span class="date-label">Période</span>
+                <span class="date-value" id="datePeriode">Mars 2026</span>
+            </div>
+            <div class="facture-date">
+                <span class="date-label">Échéance</span>
+                <span class="date-value date-echeance" id="dateEcheance">05/04/2026</span>
+            </div>
+        </section>
+        
+        <!-- Détail des lignes -->
+        <section class="facture-lignes">
+            <h3 class="section-title">Détail des prestations</h3>
+            
+            <div class="lignes-table-wrapper">
+                <table class="lignes-table">
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th>Qté</th>
+                            <th>P.U.</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lignesTableBody">
+                        <tr>
+                            <td>
+                                <span class="ligne-titre">Corridor Cocody → Plateau</span>
+                                <span class="ligne-detail">22 employés × 22 jours ouvrés</span>
+                            </td>
+                            <td>484</td>
+                            <td>750</td>
+                            <td>363 000</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="ligne-titre">Corridor Yopougon → Vridi</span>
+                                <span class="ligne-detail">15 employés × 22 jours ouvrés</span>
+                            </td>
+                            <td>330</td>
+                            <td>850</td>
+                            <td>280 500</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="ligne-titre">Corridor Marcory → Plateau</span>
+                                <span class="ligne-detail">12 employés × 22 jours ouvrés</span>
+                            </td>
+                            <td>264</td>
+                            <td>650</td>
+                            <td>171 600</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="ligne-titre">Service VIP (climatisation)</span>
+                                <span class="ligne-detail">Option premium corridor Cocody</span>
+                            </td>
+                            <td>1</td>
+                            <td>34 900</td>
+                            <td>34 900</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        
+        <!-- Totaux -->
+        <section class="facture-totaux">
+            <div class="total-ligne">
+                <span class="total-label">Sous-total HT</span>
+                <span class="total-value" id="sousTotal">850 000 FCFA</span>
+            </div>
+            <div class="total-ligne">
+                <span class="total-label">TVA (0%)</span>
+                <span class="total-value">0 FCFA</span>
+            </div>
+            <div class="total-ligne total-final">
+                <span class="total-label">Total TTC</span>
+                <span class="total-value" id="totalTTC">850 000 FCFA</span>
+            </div>
+        </section>
+        
+        <!-- Informations paiement -->
+        <section class="facture-paiement-info">
+            <h3 class="section-title">Informations de paiement</h3>
+            
+            <div class="paiement-modes">
+                <div class="paiement-mode">
+                    <div class="paiement-mode-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <rect x="2" y="4" width="20" height="16" rx="2"/>
+                            <circle cx="12" cy="12" r="4"/>
+                        </svg>
+                    </div>
+                    <div class="paiement-mode-info">
+                        <span class="paiement-mode-titre">Mobile Money</span>
+                        <span class="paiement-mode-detail">Orange / MTN / Moov</span>
+                    </div>
+                </div>
+                
+                <div class="paiement-mode">
+                    <div class="paiement-mode-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 21h18"/>
+                            <path d="M3 10h18"/>
+                            <path d="M5 6l7-3 7 3"/>
+                            <path d="M4 10v11"/>
+                            <path d="M20 10v11"/>
+                        </svg>
+                    </div>
+                    <div class="paiement-mode-info">
+                        <span class="paiement-mode-titre">Virement bancaire</span>
+                        <span class="paiement-mode-detail">IBAN disponible sur demande</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Historique paiement (si payée) -->
+        <section class="facture-historique hidden" id="historiqueSection">
+            <h3 class="section-title">Historique du paiement</h3>
+            
+            <div class="historique-timeline">
+                <div class="historique-item">
+                    <div class="historique-icon historique-success">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                    </div>
+                    <div class="historique-content">
+                        <span class="historique-titre">Paiement reçu</span>
+                        <span class="historique-date" id="paiementDate">02/03/2026 à 14:32</span>
+                        <span class="historique-detail" id="paiementMethode">Orange Money</span>
+                    </div>
+                </div>
+                <div class="historique-item">
+                    <div class="historique-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                        </svg>
+                    </div>
+                    <div class="historique-content">
+                        <span class="historique-titre">Facture émise</span>
+                        <span class="historique-date">01/03/2026</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Notes -->
+        <section class="facture-notes">
+            <p>Cette facture est payable à réception. Passé le délai de paiement, des pénalités de retard pourront être appliquées.</p>
+            <p>Pour toute question concernant cette facture, contactez-nous au <strong>+225 07 03 28 53 59</strong></p>
+        </section>
+        
+        <!-- Actions -->
+        <section class="facture-actions" id="factureActions">
+            <button type="button" class="btn btn-outline btn-full" onclick="telechargerPDF()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                Télécharger PDF
+            </button>
+            <button type="button" class="btn btn-primary btn-full" onclick="ouvrirPaiement()" id="btnPayer">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                    <line x1="1" y1="10" x2="23" y2="10"/>
+                </svg>
+                Payer cette facture
+            </button>
+        </section>
+        
+    </main>
+    
+    <!-- Modal Paiement -->
+    <div class="modal-overlay hidden" id="modalPaiement">
+        <div class="modal modal-paiement">
+            <div class="modal-header">
+                <h3 class="modal-title">Choisir le mode de paiement</h3>
+                <button type="button" class="modal-close" onclick="fermerModal()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="paiement-amount">
+                    <span class="paiement-label">Montant à payer</span>
+                    <span class="paiement-value" id="modalMontant">850 000 FCFA</span>
+                </div>
+                
+                <div class="paiement-methods">
+                    <label class="paiement-method">
+                        <input type="radio" name="methodePaiement" value="orange-money" checked>
+                        <div class="paiement-method-content">
+                            <div class="paiement-method-icon paiement-orange">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <rect x="2" y="4" width="20" height="16" rx="2"/>
+                                    <circle cx="12" cy="12" r="4"/>
+                                </svg>
+                            </div>
+                            <div class="paiement-method-info">
+                                <span class="paiement-method-name">Orange Money</span>
+                                <span class="paiement-method-desc">Paiement instantané</span>
+                            </div>
+                        </div>
+                    </label>
+                    
+                    <label class="paiement-method">
+                        <input type="radio" name="methodePaiement" value="mtn-money">
+                        <div class="paiement-method-content">
+                            <div class="paiement-method-icon paiement-mtn">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <rect x="2" y="4" width="20" height="16" rx="2"/>
+                                    <circle cx="12" cy="12" r="4"/>
+                                </svg>
+                            </div>
+                            <div class="paiement-method-info">
+                                <span class="paiement-method-name">MTN Mobile Money</span>
+                                <span class="paiement-method-desc">Paiement instantané</span>
+                            </div>
+                        </div>
+                    </label>
+                    
+                    <label class="paiement-method">
+                        <input type="radio" name="methodePaiement" value="moov-money">
+                        <div class="paiement-method-content">
+                            <div class="paiement-method-icon paiement-moov">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <rect x="2" y="4" width="20" height="16" rx="2"/>
+                                    <circle cx="12" cy="12" r="4"/>
+                                </svg>
+                            </div>
+                            <div class="paiement-method-info">
+                                <span class="paiement-method-name">Moov Money</span>
+                                <span class="paiement-method-desc">Paiement instantané</span>
+                            </div>
+                        </div>
+                    </label>
+                    
+                    <label class="paiement-method">
+                        <input type="radio" name="methodePaiement" value="virement">
+                        <div class="paiement-method-content">
+                            <div class="paiement-method-icon paiement-bank">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 21h18"/>
+                                    <path d="M3 10h18"/>
+                                    <path d="M5 6l7-3 7 3"/>
+                                    <path d="M4 10v11"/>
+                                    <path d="M20 10v11"/>
+                                </svg>
+                            </div>
+                            <div class="paiement-method-info">
+                                <span class="paiement-method-name">Virement bancaire</span>
+                                <span class="paiement-method-desc">Délai 24-48h</span>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="fermerModal()">Annuler</button>
+                <button type="button" class="btn btn-primary" onclick="procederPaiement()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                    Confirmer
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="js/supabase-config.js"></script>
+    <script src="js/fineopay-config.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        // Variables
+        let factureData = null;
+        
+        // Données de démonstration
+        const facturesDemo = {
+            '1': {
+                numero: 'FAC-2026-003',
+                periode: 'Mars 2026',
+                dateEmission: '01/03/2026',
+                dateEcheance: '05/04/2026',
+                statut: 'en-attente',
+                montant: 850000,
+                lignes: [
+                    { titre: 'Corridor Cocody → Plateau', detail: '22 employés × 22 jours ouvrés', qte: 484, pu: 750, total: 363000 },
+                    { titre: 'Corridor Yopougon → Vridi', detail: '15 employés × 22 jours ouvrés', qte: 330, pu: 850, total: 280500 },
+                    { titre: 'Corridor Marcory → Plateau', detail: '12 employés × 22 jours ouvrés', qte: 264, pu: 650, total: 171600 },
+                    { titre: 'Service VIP (climatisation)', detail: 'Option premium corridor Cocody', qte: 1, pu: 34900, total: 34900 }
+                ]
+            },
+            '2': {
+                numero: 'FAC-2026-002',
+                periode: 'Février 2026',
+                dateEmission: '01/02/2026',
+                dateEcheance: '05/03/2026',
+                datePaiement: '02/03/2026 à 14:32',
+                methodePaiement: 'Orange Money',
+                statut: 'payee',
+                montant: 820000,
+                lignes: [
+                    { titre: 'Corridor Cocody → Plateau', detail: '22 employés × 20 jours ouvrés', qte: 440, pu: 750, total: 330000 },
+                    { titre: 'Corridor Yopougon → Vridi', detail: '15 employés × 20 jours ouvrés', qte: 300, pu: 850, total: 255000 },
+                    { titre: 'Corridor Marcory → Plateau', detail: '12 employés × 20 jours ouvrés', qte: 240, pu: 650, total: 156000 },
+                    { titre: 'Service VIP (climatisation)', detail: 'Option premium corridor Cocody', qte: 1, pu: 34900, total: 34900 },
+                    { titre: 'Frais administratifs', detail: 'Gestion mensuelle', qte: 1, pu: 44100, total: 44100 }
+                ]
+            },
+            '3': {
+                numero: 'FAC-2026-001',
+                periode: 'Janvier 2026',
+                dateEmission: '01/01/2026',
+                dateEcheance: '05/02/2026',
+                datePaiement: '03/02/2026 à 09:15',
+                methodePaiement: 'Virement bancaire',
+                statut: 'payee',
+                montant: 780000,
+                lignes: [
+                    { titre: 'Corridor Cocody → Plateau', detail: '20 employés × 21 jours ouvrés', qte: 420, pu: 750, total: 315000 },
+                    { titre: 'Corridor Yopougon → Vridi', detail: '15 employés × 21 jours ouvrés', qte: 315, pu: 850, total: 267750 },
+                    { titre: 'Corridor Marcory → Plateau', detail: '10 employés × 21 jours ouvrés', qte: 210, pu: 650, total: 136500 },
+                    { titre: 'Frais de mise en place', detail: 'Installation corridors', qte: 1, pu: 60750, total: 60750 }
+                ]
+            }
+        };
+        
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Vérifier authentification
+            const entrepriseData = W2KApp.Utils.storage.get('entreprise');
+            if (!entrepriseData) {
+                window.location.href = 'connexion.html';
+                return;
+            }
+            
+            // Récupérer ID facture depuis URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const factureId = urlParams.get('id') || '1';
+            
+            // Charger données facture
+            chargerFacture(factureId, entrepriseData);
+        });
+        
+        // Charger facture
+        function chargerFacture(id, entreprise) {
+            factureData = facturesDemo[id] || facturesDemo['1'];
+            
+            // Mettre à jour en-tête
+            document.getElementById('factureNumero').textContent = factureData.numero;
+            document.getElementById('datePeriode').textContent = factureData.periode;
+            document.getElementById('dateEmission').textContent = factureData.dateEmission;
+            document.getElementById('dateEcheance').textContent = factureData.dateEcheance;
+            
+            // Statut
+            const statutBadge = document.getElementById('factureStatut');
+            if (factureData.statut === 'payee') {
+                statutBadge.innerHTML = '<span class="status-badge status-assigne">Payée</span>';
+                document.getElementById('btnPayer').style.display = 'none';
+                
+                // Afficher historique
+                document.getElementById('historiqueSection').classList.remove('hidden');
+                document.getElementById('paiementDate').textContent = factureData.datePaiement;
+                document.getElementById('paiementMethode').textContent = factureData.methodePaiement;
+            } else {
+                statutBadge.innerHTML = '<span class="status-badge status-en-attente">En attente</span>';
+            }
+            
+            // Client
+            document.getElementById('clientNom').textContent = entreprise.nom || 'ENTREPRISE DEMO';
+            document.getElementById('clientAdresse').textContent = entreprise.adresse || 'Plateau, Abidjan';
+            document.getElementById('clientContact').textContent = entreprise.telephone || '+225 07 00 00 00 00';
+            document.getElementById('clientEmail').textContent = entreprise.email || 'contact@entreprise-demo.ci';
+            
+            // Lignes
+            const tbody = document.getElementById('lignesTableBody');
+            tbody.innerHTML = factureData.lignes.map(ligne => `
+                <tr>
+                    <td>
+                        <span class="ligne-titre">${ligne.titre}</span>
+                        <span class="ligne-detail">${ligne.detail}</span>
+                    </td>
+                    <td>${ligne.qte.toLocaleString('fr-FR')}</td>
+                    <td>${ligne.pu.toLocaleString('fr-FR')}</td>
+                    <td>${ligne.total.toLocaleString('fr-FR')}</td>
+                </tr>
+            `).join('');
+            
+            // Totaux
+            document.getElementById('sousTotal').textContent = factureData.montant.toLocaleString('fr-FR') + ' FCFA';
+            document.getElementById('totalTTC').textContent = factureData.montant.toLocaleString('fr-FR') + ' FCFA';
+            document.getElementById('modalMontant').textContent = factureData.montant.toLocaleString('fr-FR') + ' FCFA';
+        }
+        
+        // Télécharger PDF
+        function telechargerPDF() {
+            W2KApp.Notifications.show('Génération du PDF en cours...', 'info');
+            
+            setTimeout(function() {
+                W2KApp.Notifications.show('PDF téléchargé (mode démo)', 'success');
+            }, 1500);
+        }
+        
+        // Modal paiement
+        function ouvrirPaiement() {
+            document.getElementById('modalPaiement').classList.remove('hidden');
+        }
+        
+        function fermerModal() {
+            document.querySelectorAll('.modal-overlay').forEach(m => {
+                m.classList.add('hidden');
+            });
+        }
+        
+        // Procéder au paiement
+        function procederPaiement() {
+            const methode = document.querySelector('input[name="methodePaiement"]:checked').value;
+            
+            W2KApp.Notifications.show('Redirection vers ' + getMethodeName(methode) + '...', 'info');
+            
+            setTimeout(function() {
+                W2KApp.Notifications.show('Mode démonstration - Paiement simulé', 'success');
+                fermerModal();
+                
+                // Rediriger vers facturation
+                setTimeout(function() {
+                    window.location.href = 'facturation.html';
+                }, 1500);
+            }, 2000);
+        }
+        
+        function getMethodeName(methode) {
+            const noms = {
+                'orange-money': 'Orange Money',
+                'mtn-money': 'MTN Mobile Money',
+                'moov-money': 'Moov Money',
+                'virement': 'Virement bancaire'
+            };
+            return noms[methode] || methode;
+        }
+        
+        // Fermer modal au clic extérieur
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    fermerModal();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
