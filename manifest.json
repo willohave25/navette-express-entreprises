@@ -2,7 +2,7 @@
   "name": "Navette Express — Espace Entreprise",
   "short_name": "Navette Entreprise",
   "description": "Gérez le transport de vos équipes en un clic. Optimisez la mobilité RH de votre société avec des corridors dédiés et un suivi en temps réel.",
-  "start_url": "/splash.html",
+  "start_url": "/index.html",
   "display": "standalone",
   "orientation": "portrait-primary",
   "background_color": "#0F1A2E",
