@@ -193,8 +193,8 @@ self.addEventListener('push', (event) => {
   const data = event.data.json();
   const options = {
     body: data.body || 'Nouvelle notification Navette Express',
-    icon: '/images/icons/icon-192x192.png',
-    badge: '/images/icons/badge-72x72.png',
+    icon: '/images/logo/logo-jaebets.png',
+    badge: '/images/logo/logo-jaebets.png',
     vibrate: [100, 50, 100],
     data: {
       url: data.url || '/notifications.html'
