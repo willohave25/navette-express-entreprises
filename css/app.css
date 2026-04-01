@@ -181,6 +181,30 @@ h6 { font-size: 0.875rem; }
    ============================================ */
 .splash-screen {
     background: linear-gradient(145deg, var(--dark-bg) 0%, var(--primary-blue) 100%);
+    position: relative;
+}
+
+/* Background image Runway - Splash */
+.splash-screen::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('../images/ecrans/entreprise-splash.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.15;
+    z-index: 0;
+}
+
+/* Fallback JPG pour navigateurs sans WebP */
+@supports not (background-image: url('../images/ecrans/entreprise-splash.webp')) {
+    .splash-screen::before {
+        background-image: url('../images/ecrans/entreprise-splash.jpg');
+    }
 }
 
 .splash-container {
@@ -2545,4 +2569,299 @@ h6 { font-size: 0.875rem; }
         --card-bg: rgba(255, 255, 255, 0.1);
         --card-bg-hover: rgba(255, 255, 255, 0.15);
     }
+}
+
+/* ============================================
+   BACKGROUNDS IMAGES RUNWAY PAR PAGE
+   Images générées pour illustrer chaque écran
+   ============================================ */
+
+/* Connexion */
+.page-connexion {
+    position: relative;
+}
+
+.page-connexion::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('../images/ecrans/entreprise-connexion.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.08;
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* Inscription */
+.page-inscription {
+    position: relative;
+}
+
+.page-inscription::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('../images/ecrans/entreprise-connexion.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.08;
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* Dashboard */
+.page-dashboard {
+    position: relative;
+}
+
+.page-dashboard::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('../images/ecrans/entreprise-dashboard.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.05;
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* Corridors */
+.page-corridors {
+    position: relative;
+}
+
+.page-corridors::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('../images/ecrans/entreprise-corridors.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.05;
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* Créer corridor */
+.page-creer-corridor {
+    position: relative;
+}
+
+.page-creer-corridor::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('../images/ecrans/entreprise-creer-corridor.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.05;
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* Employés */
+.page-employes {
+    position: relative;
+}
+
+.page-employes::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('../images/ecrans/entreprise-employes.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.05;
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* Import Excel */
+.page-import-excel {
+    position: relative;
+}
+
+.page-import-excel::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('../images/ecrans/entreprise-import-excel.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.05;
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* Suivi transport */
+.page-suivi-transport {
+    position: relative;
+}
+
+.page-suivi-transport::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('../images/ecrans/entreprise-suivi.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.05;
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* Facturation */
+.page-facturation {
+    position: relative;
+}
+
+.page-facturation::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('../images/ecrans/entreprise-facturation.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.05;
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* Détail facture */
+.page-detail-facture {
+    position: relative;
+}
+
+.page-detail-facture::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('../images/ecrans/entreprise-facture-detail.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.05;
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* Profil */
+.page-profil {
+    position: relative;
+}
+
+.page-profil::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('../images/ecrans/entreprise-dashboard.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.05;
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* Notifications */
+.page-notifications {
+    position: relative;
+}
+
+.page-notifications::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('../images/ecrans/entreprise-dashboard.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.05;
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* Erreur */
+.page-erreur {
+    position: relative;
+}
+
+.page-erreur::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('../images/ecrans/entreprise-splash.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.08;
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* Fallback JPG pour navigateurs sans WebP */
+@supports not (background-image: url('../images/ecrans/entreprise-splash.webp')) {
+    .page-connexion::before { background-image: url('../images/ecrans/entreprise-connexion.jpg'); }
+    .page-inscription::before { background-image: url('../images/ecrans/entreprise-connexion.jpg'); }
+    .page-dashboard::before { background-image: url('../images/ecrans/entreprise-dashboard.jpg'); }
+    .page-corridors::before { background-image: url('../images/ecrans/entreprise-corridors.jpg'); }
+    .page-creer-corridor::before { background-image: url('../images/ecrans/entreprise-creer-corridor.jpg'); }
+    .page-employes::before { background-image: url('../images/ecrans/entreprise-employes.jpg'); }
+    .page-import-excel::before { background-image: url('../images/ecrans/entreprise-import-excel.jpg'); }
+    .page-suivi-transport::before { background-image: url('../images/ecrans/entreprise-suivi.jpg'); }
+    .page-facturation::before { background-image: url('../images/ecrans/entreprise-facturation.jpg'); }
+    .page-detail-facture::before { background-image: url('../images/ecrans/entreprise-facture-detail.jpg'); }
+    .page-profil::before { background-image: url('../images/ecrans/entreprise-dashboard.jpg'); }
+    .page-notifications::before { background-image: url('../images/ecrans/entreprise-dashboard.jpg'); }
+    .page-erreur::before { background-image: url('../images/ecrans/entreprise-splash.jpg'); }
 }
