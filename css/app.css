@@ -116,6 +116,18 @@ img {
     display: block;
 }
 
+/* Règle globale SVG - empêcher les icônes de prendre toute la page */
+svg {
+    max-width: 100%;
+    height: auto;
+    flex-shrink: 0;
+}
+
+svg:not([width]):not([class]) {
+    width: 24px;
+    height: 24px;
+}
+
 button {
     font-family: inherit;
     cursor: pointer;
