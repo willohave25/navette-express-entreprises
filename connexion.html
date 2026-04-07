@@ -175,6 +175,19 @@
         <small>Conception : <a href="https://w2k-digital.com" target="_blank" rel="noopener">W2K-Digital</a></small>
       </p>
       
+      <!-- Bouton installation PWA -->
+      <div class="pwa-install-section hidden" id="pwaInstallSection">
+        <button type="button" class="btn btn-gold btn-install" id="btnInstallPwa">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          <span>Installer l'application</span>
+        </button>
+        <p class="pwa-install-hint">Accès rapide depuis votre écran d'accueil</p>
+      </div>
+      
     </footer>
     
   </main>
@@ -296,6 +309,34 @@
       document.getElementById('link-forgot-password').addEventListener('click', function(e) {
         e.preventDefault();
         alert('Contactez le support : infos@jaebets-holding.com ou appelez le +225 07 03 28 53 59');
+      });
+      
+      /* Installation PWA */
+      let deferredPrompt;
+      const pwaInstallSection = document.getElementById('pwaInstallSection');
+      const btnInstallPwa = document.getElementById('btnInstallPwa');
+      
+      window.addEventListener('beforeinstallprompt', function(e) {
+        e.preventDefault();
+        deferredPrompt = e;
+        pwaInstallSection.classList.remove('hidden');
+      });
+      
+      btnInstallPwa.addEventListener('click', async function() {
+        if (!deferredPrompt) return;
+        
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        
+        if (outcome === 'accepted') {
+          pwaInstallSection.classList.add('hidden');
+        }
+        deferredPrompt = null;
+      });
+      
+      window.addEventListener('appinstalled', function() {
+        pwaInstallSection.classList.add('hidden');
+        deferredPrompt = null;
       });
     });
   </script>
