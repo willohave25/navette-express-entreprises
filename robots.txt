@@ -1,0 +1,75 @@
+# Robots.txt — Navette Express Espace Entreprise
+# https://www.entreprise.jaebets-holding.com
+# W2K-Digital 2025
+
+# Autoriser tous les robots
+User-agent: *
+
+# Pages autorisées
+Allow: /
+Allow: /index.html
+Allow: /connexion.html
+Allow: /inscription.html
+
+# Pages privées (app après connexion) - ne pas indexer le contenu dynamique
+Disallow: /dashboard.html
+Disallow: /corridors.html
+Disallow: /creer-corridor.html
+Disallow: /employes.html
+Disallow: /import-excel.html
+Disallow: /suivi-transport.html
+Disallow: /facturation.html
+Disallow: /detail-facture.html
+Disallow: /profil.html
+Disallow: /notifications.html
+
+# Page erreur
+Disallow: /erreur.html
+
+# Fichiers techniques
+Disallow: /sw.js
+Disallow: /manifest.json
+Disallow: /js/
+Disallow: /css/
+
+# Sitemap
+Sitemap: https://www.entreprise.jaebets-holding.com/sitemap.xml
+
+# Délai entre requêtes (respect serveur)
+Crawl-delay: 10
+
+# Googlebot spécifique
+User-agent: Googlebot
+Allow: /
+Allow: /index.html
+Allow: /connexion.html
+Allow: /inscription.html
+Disallow: /dashboard.html
+Disallow: /corridors.html
+Disallow: /creer-corridor.html
+Disallow: /employes.html
+Disallow: /import-excel.html
+Disallow: /suivi-transport.html
+Disallow: /facturation.html
+Disallow: /detail-facture.html
+Disallow: /profil.html
+Disallow: /notifications.html
+Disallow: /erreur.html
+
+# Bingbot spécifique
+User-agent: Bingbot
+Allow: /
+Allow: /index.html
+Allow: /connexion.html
+Allow: /inscription.html
+Disallow: /dashboard.html
+Disallow: /corridors.html
+Disallow: /creer-corridor.html
+Disallow: /employes.html
+Disallow: /import-excel.html
+Disallow: /suivi-transport.html
+Disallow: /facturation.html
+Disallow: /detail-facture.html
+Disallow: /profil.html
+Disallow: /notifications.html
+Disallow: /erreur.html
