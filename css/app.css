@@ -1555,61 +1555,343 @@ h6 { font-size: 0.875rem; }
     margin-bottom: var(--spacing-2xl);
 }
 
-.wizard-step {
-    width: 36px;
-    height: 36px;
+/* ---- WIZARD : Header ---- */
+.wizard-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-md) var(--spacing-lg);
+    background: var(--primary-blue);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.wizard-back-btn,
+.wizard-close-btn {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.06);
+    border: none;
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    cursor: pointer;
+    text-decoration: none;
+    transition: background var(--transition-fast);
+}
+
+.wizard-back-btn:hover,
+.wizard-close-btn:hover {
+    background: rgba(255,255,255,0.12);
+}
+
+.wizard-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* ---- WIZARD : Barre de progression ---- */
+.wizard-progress {
+    padding: var(--spacing-md) var(--spacing-lg);
+    background: var(--primary-blue);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.progress-steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    margin-bottom: var(--spacing-sm);
+}
+
+.progress-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.step-circle {
+    width: 30px;
+    height: 30px;
     border-radius: var(--radius-full);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.875rem;
+    font-size: 0.8rem;
     font-weight: 600;
     background: var(--card-bg);
     color: var(--text-secondary);
-    border: 2px solid rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255,255,255,0.1);
     transition: all var(--transition-fast);
 }
 
-.wizard-step.active {
+.progress-step.active .step-circle {
     background: var(--secondary-turquoise);
     color: var(--dark-bg);
     border-color: var(--secondary-turquoise);
 }
 
-.wizard-step.completed {
+.progress-step.completed .step-circle {
     background: var(--success);
     color: var(--dark-bg);
     border-color: var(--success);
 }
 
-.wizard-line {
-    width: 40px;
-    height: 2px;
-    background: rgba(255, 255, 255, 0.1);
+.step-label {
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
 }
 
-.wizard-line.active {
+.progress-step.active .step-label {
+    color: var(--secondary-turquoise);
+}
+
+.progress-line {
+    width: 32px;
+    height: 2px;
+    background: rgba(255,255,255,0.1);
+    margin-bottom: 14px;
+    flex-shrink: 0;
+}
+
+.progress-line.active {
     background: var(--secondary-turquoise);
 }
 
+.progress-bar {
+    height: 3px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 99px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: var(--secondary-turquoise);
+    border-radius: 99px;
+    transition: width var(--transition-normal);
+}
+
+/* ---- WIZARD : Contenu (sections/étapes) ---- */
 .wizard-content {
-    background: var(--card-bg);
-    border-radius: var(--radius-lg);
-    padding: var(--spacing-xl);
-    margin-bottom: var(--spacing-lg);
+    padding: var(--spacing-lg);
+    padding-bottom: 100px;
 }
 
-.wizard-title {
-    font-size: 1.125rem;
-    font-weight: 600;
+.wizard-form {
+    max-width: 560px;
+    margin: 0 auto;
+}
+
+.wizard-step {
+    display: none;
+}
+
+.wizard-step.active {
+    display: block;
+}
+
+.step-header {
+    margin-bottom: var(--spacing-xl);
+}
+
+.step-title {
+    font-size: 1.25rem;
+    font-weight: 700;
     color: var(--text-primary);
-    margin-bottom: var(--spacing-lg);
+    margin-bottom: var(--spacing-xs);
 }
 
+.step-subtitle {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.step-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+/* ---- WIZARD : Footer navigation ---- */
 .wizard-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
     display: flex;
     justify-content: space-between;
     gap: var(--spacing-md);
+    padding: var(--spacing-md) var(--spacing-lg);
+    background: var(--primary-blue);
+    border-top: 1px solid rgba(255,255,255,0.08);
+    z-index: 100;
+}
+
+/* ---- WIZARD : Cartes radio ---- */
+.radio-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-md);
+}
+
+.radio-card input[type="radio"] {
+    display: none;
+}
+
+.radio-card-content {
+    padding: var(--spacing-md);
+    background: rgba(255,255,255,0.03);
+    border: 2px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius-md);
+    text-align: center;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.radio-card input[type="radio"]:checked + .radio-card-content {
+    border-color: var(--secondary-turquoise);
+    background: rgba(46,196,182,0.08);
+}
+
+.radio-card-content svg {
+    color: var(--secondary-turquoise);
+}
+
+.radio-card-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.radio-card-desc {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+/* ---- WIZARD : Info card ---- */
+.info-card {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: rgba(46,196,182,0.06);
+    border: 1px solid rgba(46,196,182,0.2);
+    border-radius: var(--radius-md);
+    margin-top: var(--spacing-md);
+}
+
+.info-card-icon svg {
+    width: 24px;
+    height: 24px;
+    color: var(--secondary-turquoise);
+}
+
+.info-card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.info-card-title {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.info-card-value {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.info-card-note {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+/* ---- WIZARD : Horaires ---- */
+.horaires-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+.horaire-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+}
+
+.horaire-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.horaire-header svg {
+    color: var(--secondary-turquoise);
+    flex-shrink: 0;
+}
+
+.horaire-note {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: var(--spacing-xs);
+}
+
+/* ---- WIZARD : Sélecteur jours ---- */
+.days-selector {
+    display: flex;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+}
+
+.day-checkbox input[type="checkbox"] {
+    display: none;
+}
+
+.day-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-sm);
+    background: rgba(255,255,255,0.04);
+    border: 2px solid rgba(255,255,255,0.1);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.day-checkbox input[type="checkbox"]:checked + .day-label {
+    background: rgba(46,196,182,0.15);
+    border-color: var(--secondary-turquoise);
+    color: var(--secondary-turquoise);
 }
 
 /* Options corridor */
