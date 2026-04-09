@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1B2A4A">
+    <meta name="description" content="Vos notifications - Navette Express Entreprise">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <title>Notifications | Navette Express Entreprise</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="images/logo/logo-jaebets.png">
+    <link rel="apple-touch-icon" href="images/logo/logo-jaebets.png">
+    
+    <!-- Google Fonts Montserrat -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="css/app.css">
+</head>
+<body class="page-notifications">
+    
+    <!-- Header fixe -->
+    <header class="wizard-header">
+        <a href="dashboard.html" class="wizard-back-btn">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15 18 9 12 15 6"/>
+            </svg>
+        </a>
+        <h1 class="wizard-title">Notifications</h1>
+        <button type="button" class="wizard-header-btn" onclick="marquerToutesLues()" id="btnMarquerLues">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 11 12 14 22 4"/>
+                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+            </svg>
+        </button>
+    </header>
+    
+    <!-- Contenu principal -->
+    <main class="notifications-content">
+        
+        <!-- Filtres -->
+        <div class="notifications-filters">
+            <button type="button" class="notif-filter active" data-filter="toutes" onclick="filtrerNotifications('toutes')">
+                Toutes
+                <span class="notif-filter-count" id="countToutes">7</span>
+            </button>
+            <button type="button" class="notif-filter" data-filter="non-lues" onclick="filtrerNotifications('non-lues')">
+                Non lues
+                <span class="notif-filter-count" id="countNonLues">3</span>
+            </button>
+            <button type="button" class="notif-filter" data-filter="importantes" onclick="filtrerNotifications('importantes')">
+                Importantes
+            </button>
+        </div>
+        
+        <!-- Liste des notifications -->
+        <div class="notifications-list" id="notificationsList">
+            
+            <!-- Aujourd'hui -->
+            <div class="notifications-group">
+                <h3 class="notifications-group-title">Aujourd'hui</h3>
+                
+                <!-- Notification non lue - Importante -->
+                <article class="notification-card non-lue importante" data-id="1">
+                    <div class="notification-indicator"></div>
+                    <div class="notification-icon notification-icon-warning">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                            <line x1="12" y1="9" x2="12" y2="13"/>
+                            <line x1="12" y1="17" x2="12.01" y2="17"/>
+                        </svg>
+                    </div>
+                    <div class="notification-content">
+                        <h4 class="notification-title">Facture en attente</h4>
+                        <p class="notification-message">Votre facture de Mars 2026 (850 000 FCFA) arrive à échéance le 05/04/2026</p>
+                        <span class="notification-time">Il y a 2 heures</span>
+                    </div>
+                    <button type="button" class="notification-action" onclick="ouvrirNotification(1, 'facturation.html')">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9 18 15 12 9 6"/>
+                        </svg>
+                    </button>
+                </article>
+                
+                <!-- Notification non lue -->
+                <article class="notification-card non-lue" data-id="2">
+                    <div class="notification-indicator"></div>
+                    <div class="notification-icon notification-icon-success">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="1" y="6" width="22" height="12" rx="2"/>
+                            <circle cx="6" cy="12" r="2"/>
+                            <circle cx="18" cy="12" r="2"/>
+                        </svg>
+                    </div>
+                    <div class="notification-content">
+                        <h4 class="notification-title">Trajet terminé</h4>
+                        <p class="notification-message">Le corridor Cocody → Plateau a complété son trajet matinal. 22 employés déposés.</p>
+                        <span class="notification-time">Il y a 4 heures</span>
+                    </div>
+                    <button type="button" class="notification-action" onclick="ouvrirNotification(2, 'suivi-transport.html')">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9 18 15 12 9 6"/>
+                        </svg>
+                    </button>
+                </article>
+                
+                <!-- Notification non lue -->
+                <article class="notification-card non-lue" data-id="3">
+                    <div class="notification-indicator"></div>
+                    <div class="notification-icon notification-icon-info">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <line x1="19" y1="8" x2="19" y2="14"/>
+                            <line x1="22" y1="11" x2="16" y2="11"/>
+                        </svg>
+                    </div>
+                    <div class="notification-content">
+                        <h4 class="notification-title">Nouvel employé ajouté</h4>
+                        <p class="notification-message">Kouassi Jean-Pierre a été ajouté au corridor Marcory → Plateau</p>
+                        <span class="notification-time">Il y a 5 heures</span>
+                    </div>
+                    <button type="button" class="notification-action" onclick="ouvrirNotification(3, 'employes.html')">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9 18 15 12 9 6"/>
+                        </svg>
+                    </button>
+                </article>
+            </div>
+            
+            <!-- Hier -->
+            <div class="notifications-group">
+                <h3 class="notifications-group-title">Hier</h3>
+                
+                <!-- Notification lue -->
+                <article class="notification-card" data-id="4">
+                    <div class="notification-icon notification-icon-success">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                    </div>
+                    <div class="notification-content">
+                        <h4 class="notification-title">Corridor activé</h4>
+                        <p class="notification-message">Le corridor Yopougon → Vridi est maintenant actif avec 15 employés assignés</p>
+                        <span class="notification-time">Hier à 16:30</span>
+                    </div>
+                    <button type="button" class="notification-action" onclick="ouvrirNotification(4, 'corridors.html')">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9 18 15 12 9 6"/>
+                        </svg>
+                    </button>
+                </article>
+                
+                <!-- Notification lue -->
+                <article class="notification-card" data-id="5">
+                    <div class="notification-icon notification-icon-info">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="12" y1="16" x2="12" y2="12"/>
+                            <line x1="12" y1="8" x2="12.01" y2="8"/>
+                        </svg>
+                    </div>
+                    <div class="notification-content">
+                        <h4 class="notification-title">Mise à jour système</h4>
+                        <p class="notification-message">L'application a été mise à jour avec de nouvelles fonctionnalités de suivi temps réel</p>
+                        <span class="notification-time">Hier à 10:00</span>
+                    </div>
+                </article>
+            </div>
+            
+            <!-- Cette semaine -->
+            <div class="notifications-group">
+                <h3 class="notifications-group-title">Cette semaine</h3>
+                
+                <!-- Notification lue -->
+                <article class="notification-card" data-id="6">
+                    <div class="notification-icon notification-icon-success">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                            <polyline points="9 15 11 17 15 13"/>
+                        </svg>
+                    </div>
+                    <div class="notification-content">
+                        <h4 class="notification-title">Paiement confirmé</h4>
+                        <p class="notification-message">Votre paiement de 820 000 FCFA pour la facture de Février 2026 a été reçu</p>
+                        <span class="notification-time">Il y a 3 jours</span>
+                    </div>
+                    <button type="button" class="notification-action" onclick="ouvrirNotification(6, 'detail-facture.html?id=2')">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9 18 15 12 9 6"/>
+                        </svg>
+                    </button>
+                </article>
+                
+                <!-- Notification lue -->
+                <article class="notification-card" data-id="7">
+                    <div class="notification-icon notification-icon-info">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="17 8 12 3 7 8"/>
+                            <line x1="12" y1="3" x2="12" y2="15"/>
+                        </svg>
+                    </div>
+                    <div class="notification-content">
+                        <h4 class="notification-title">Import réussi</h4>
+                        <p class="notification-message">5 nouveaux employés ont été importés via Excel et assignés aux corridors</p>
+                        <span class="notification-time">Il y a 5 jours</span>
+                    </div>
+                    <button type="button" class="notification-action" onclick="ouvrirNotification(7, 'employes.html')">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9 18 15 12 9 6"/>
+                        </svg>
+                    </button>
+                </article>
+            </div>
+            
+        </div>
+        
+        <!-- État vide -->
+        <div class="notifications-empty hidden" id="notificationsEmpty">
+            <div class="empty-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                </svg>
+            </div>
+            <h3 class="empty-title">Aucune notification</h3>
+            <p class="empty-message">Vous êtes à jour ! Toutes vos notifications ont été lues.</p>
+        </div>
+        
+    </main>
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        // Données des notifications
+        let notifications = [
+            { id: 1, lue: false, importante: true },
+            { id: 2, lue: false, importante: false },
+            { id: 3, lue: false, importante: false },
+            { id: 4, lue: true, importante: false },
+            { id: 5, lue: true, importante: false },
+            { id: 6, lue: true, importante: false },
+            { id: 7, lue: true, importante: false }
+        ];
+        
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Vérifier authentification
+            const entrepriseData = W2KApp.Utils.storage.get('entreprise');
+            if (!entrepriseData) {
+                window.location.href = 'connexion.html';
+                return;
+            }
+            
+            mettreAJourCompteurs();
+        });
+        
+        // Mettre à jour les compteurs
+        function mettreAJourCompteurs() {
+            const nonLues = notifications.filter(n => !n.lue).length;
+            const toutes = notifications.length;
+            
+            document.getElementById('countToutes').textContent = toutes;
+            document.getElementById('countNonLues').textContent = nonLues;
+            
+            // Masquer bouton si toutes lues
+            if (nonLues === 0) {
+                document.getElementById('btnMarquerLues').style.display = 'none';
+            }
+        }
+        
+        // Filtrer notifications
+        function filtrerNotifications(filtre) {
+            // Mettre à jour boutons
+            document.querySelectorAll('.notif-filter').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-filter="${filtre}"]`).classList.add('active');
+            
+            // Filtrer cartes
+            const cartes = document.querySelectorAll('.notification-card');
+            let visibles = 0;
+            
+            cartes.forEach(carte => {
+                let visible = true;
+                
+                if (filtre === 'non-lues' && !carte.classList.contains('non-lue')) {
+                    visible = false;
+                }
+                if (filtre === 'importantes' && !carte.classList.contains('importante')) {
+                    visible = false;
+                }
+                
+                carte.style.display = visible ? 'flex' : 'none';
+                if (visible) visibles++;
+            });
+            
+            // Afficher/masquer les groupes vides
+            document.querySelectorAll('.notifications-group').forEach(groupe => {
+                const cartesVisibles = groupe.querySelectorAll('.notification-card[style*="flex"], .notification-card:not([style*="none"])');
+                groupe.style.display = cartesVisibles.length > 0 ? 'block' : 'none';
+            });
+            
+            // État vide
+            const emptyState = document.getElementById('notificationsEmpty');
+            const liste = document.getElementById('notificationsList');
+            
+            if (visibles === 0) {
+                emptyState.classList.remove('hidden');
+                liste.style.display = 'none';
+            } else {
+                emptyState.classList.add('hidden');
+                liste.style.display = 'block';
+            }
+        }
+        
+        // Ouvrir notification
+        function ouvrirNotification(id, url) {
+            // Marquer comme lue
+            const carte = document.querySelector(`[data-id="${id}"]`);
+            carte.classList.remove('non-lue');
+            
+            // Mettre à jour données
+            const notif = notifications.find(n => n.id === id);
+            if (notif) notif.lue = true;
+            
+            mettreAJourCompteurs();
+            
+            // Naviguer
+            if (url) {
+                window.location.href = url;
+            }
+        }
+        
+        // Marquer toutes comme lues
+        function marquerToutesLues() {
+            const cartes = document.querySelectorAll('.notification-card.non-lue');
+            cartes.forEach(carte => {
+                carte.classList.remove('non-lue');
+            });
+            
+            // Mettre à jour données
+            notifications.forEach(n => n.lue = true);
+            
+            mettreAJourCompteurs();
+            
+            W2KApp.Notifications.show('Toutes les notifications ont été marquées comme lues', 'success');
+        }
+    </script>
+</body>
+</html>
