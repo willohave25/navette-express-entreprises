@@ -1,358 +1,175 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#1B2A4A">
-    <meta name="description" content="Vos notifications - Navette Express Entreprise">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    
-    <title>Notifications | Navette Express Entreprise</title>
-    
-    <link rel="manifest" href="manifest.json">
-    <link rel="icon" type="image/png" href="images/logo/logo-jaebets.png">
-    <link rel="apple-touch-icon" href="images/logo/logo-jaebets.png">
-    
-    <!-- Google Fonts Montserrat -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="css/app.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#1B2A4A">
+  <link rel="manifest" href="manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/app.css">
+  <title>Notifications - Navette Express</title>
+  <style>
+    .hero-banner { position: relative; height: 140px; margin: 16px; border-radius: 16px; overflow: hidden; }
+    .hero-banner img { width: 100%; height: 100%; object-fit: cover; }
+    .hero-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 0%, rgba(15,26,46,0.95) 100%); display: flex; flex-direction: column; justify-content: flex-end; padding: 20px; }
+    .hero-title { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+    .hero-subtitle { font-size: 14px; color: rgba(255,255,255,0.7); }
+    .notif-section { padding: 0 16px 100px; }
+    .notif-card { display: flex; gap: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 14px; margin-bottom: 10px; }
+    .notif-card.unread { border-left: 3px solid #2EC4B6; background: rgba(46,196,182,0.05); }
+    .notif-icon { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: rgba(46,196,182,0.15); border-radius: 10px; flex-shrink: 0; }
+    .notif-icon svg { width: 22px; height: 22px; color: #2EC4B6; }
+    .notif-icon.gold { background: rgba(200,169,81,0.15); }
+    .notif-icon.gold svg { color: #C8A951; }
+    .notif-content { flex: 1; }
+    .notif-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+    .notif-text { font-size: 13px; color: rgba(255,255,255,0.6); margin-bottom: 6px; line-height: 1.4; }
+    .notif-time { font-size: 12px; color: rgba(255,255,255,0.4); }
+  </style>
 </head>
-<body class="page-notifications">
+<body class="with-nav">
+  <header class="header">
+    <button class="header-btn" onclick="history.back()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <h1 class="header-title">Notifications</h1>
+    <button class="header-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button>
+  </header>
+  
+  <main class="page-with-header">
+    <div class="hero-banner">
+      <picture>
+        <source srcset="images/ecrans/passagers-notification.webp" type="image/webp">
+        <img src="images/ecrans/passagers-notification.jpg" alt="Notifications" loading="eager">
+      </picture>
+      <div class="hero-overlay">
+        <h2 class="hero-title">Notifications</h2>
+        <p class="hero-subtitle">3 nouvelles</p>
+      </div>
+    </div>
     
-    <!-- Header fixe -->
-    <header class="wizard-header">
-        <a href="dashboard.html" class="wizard-back-btn">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="15 18 9 12 15 6"/>
-            </svg>
-        </a>
-        <h1 class="wizard-title">Notifications</h1>
-        <button type="button" class="wizard-header-btn" onclick="marquerToutesLues()" id="btnMarquerLues">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="9 11 12 14 22 4"/>
-                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
-            </svg>
-        </button>
-    </header>
-    
-    <!-- Contenu principal -->
-    <main class="notifications-content">
-        
-        <!-- Filtres -->
-        <div class="notifications-filters">
-            <button type="button" class="notif-filter active" data-filter="toutes" onclick="filtrerNotifications('toutes')">
-                Toutes
-                <span class="notif-filter-count" id="countToutes">7</span>
-            </button>
-            <button type="button" class="notif-filter" data-filter="non-lues" onclick="filtrerNotifications('non-lues')">
-                Non lues
-                <span class="notif-filter-count" id="countNonLues">3</span>
-            </button>
-            <button type="button" class="notif-filter" data-filter="importantes" onclick="filtrerNotifications('importantes')">
-                Importantes
-            </button>
+    <div class="notif-section">
+      <div class="notif-card unread">
+        <div class="notif-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg></div>
+        <div class="notif-content">
+          <p class="notif-title">Navette en approche</p>
+          <p class="notif-text">Votre bus arrive dans 8 minutes à Carrefour Wassakara.</p>
+          <p class="notif-time">Il y a 2 min</p>
         </div>
-        
-        <!-- Liste des notifications -->
-        <div class="notifications-list" id="notificationsList">
-            
-            <!-- Aujourd'hui -->
-            <div class="notifications-group">
-                <h3 class="notifications-group-title">Aujourd'hui</h3>
-                
-                <!-- Notification non lue - Importante -->
-                <article class="notification-card non-lue importante" data-id="1">
-                    <div class="notification-indicator"></div>
-                    <div class="notification-icon notification-icon-warning">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                            <line x1="12" y1="9" x2="12" y2="13"/>
-                            <line x1="12" y1="17" x2="12.01" y2="17"/>
-                        </svg>
-                    </div>
-                    <div class="notification-content">
-                        <h4 class="notification-title">Facture en attente</h4>
-                        <p class="notification-message">Votre facture de Mars 2026 (850 000 FCFA) arrive à échéance le 05/04/2026</p>
-                        <span class="notification-time">Il y a 2 heures</span>
-                    </div>
-                    <button type="button" class="notification-action" onclick="ouvrirNotification(1, 'facturation.html')">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="9 18 15 12 9 6"/>
-                        </svg>
-                    </button>
-                </article>
-                
-                <!-- Notification non lue -->
-                <article class="notification-card non-lue" data-id="2">
-                    <div class="notification-indicator"></div>
-                    <div class="notification-icon notification-icon-success">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="1" y="6" width="22" height="12" rx="2"/>
-                            <circle cx="6" cy="12" r="2"/>
-                            <circle cx="18" cy="12" r="2"/>
-                        </svg>
-                    </div>
-                    <div class="notification-content">
-                        <h4 class="notification-title">Trajet terminé</h4>
-                        <p class="notification-message">Le corridor Cocody → Plateau a complété son trajet matinal. 22 employés déposés.</p>
-                        <span class="notification-time">Il y a 4 heures</span>
-                    </div>
-                    <button type="button" class="notification-action" onclick="ouvrirNotification(2, 'suivi-transport.html')">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="9 18 15 12 9 6"/>
-                        </svg>
-                    </button>
-                </article>
-                
-                <!-- Notification non lue -->
-                <article class="notification-card non-lue" data-id="3">
-                    <div class="notification-indicator"></div>
-                    <div class="notification-icon notification-icon-info">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                            <circle cx="9" cy="7" r="4"/>
-                            <line x1="19" y1="8" x2="19" y2="14"/>
-                            <line x1="22" y1="11" x2="16" y2="11"/>
-                        </svg>
-                    </div>
-                    <div class="notification-content">
-                        <h4 class="notification-title">Nouvel employé ajouté</h4>
-                        <p class="notification-message">Kouassi Jean-Pierre a été ajouté au corridor Marcory → Plateau</p>
-                        <span class="notification-time">Il y a 5 heures</span>
-                    </div>
-                    <button type="button" class="notification-action" onclick="ouvrirNotification(3, 'employes.html')">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="9 18 15 12 9 6"/>
-                        </svg>
-                    </button>
-                </article>
-            </div>
-            
-            <!-- Hier -->
-            <div class="notifications-group">
-                <h3 class="notifications-group-title">Hier</h3>
-                
-                <!-- Notification lue -->
-                <article class="notification-card" data-id="4">
-                    <div class="notification-icon notification-icon-success">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="20 6 9 17 4 12"/>
-                        </svg>
-                    </div>
-                    <div class="notification-content">
-                        <h4 class="notification-title">Corridor activé</h4>
-                        <p class="notification-message">Le corridor Yopougon → Vridi est maintenant actif avec 15 employés assignés</p>
-                        <span class="notification-time">Hier à 16:30</span>
-                    </div>
-                    <button type="button" class="notification-action" onclick="ouvrirNotification(4, 'corridors.html')">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="9 18 15 12 9 6"/>
-                        </svg>
-                    </button>
-                </article>
-                
-                <!-- Notification lue -->
-                <article class="notification-card" data-id="5">
-                    <div class="notification-icon notification-icon-info">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"/>
-                            <line x1="12" y1="16" x2="12" y2="12"/>
-                            <line x1="12" y1="8" x2="12.01" y2="8"/>
-                        </svg>
-                    </div>
-                    <div class="notification-content">
-                        <h4 class="notification-title">Mise à jour système</h4>
-                        <p class="notification-message">L'application a été mise à jour avec de nouvelles fonctionnalités de suivi temps réel</p>
-                        <span class="notification-time">Hier à 10:00</span>
-                    </div>
-                </article>
-            </div>
-            
-            <!-- Cette semaine -->
-            <div class="notifications-group">
-                <h3 class="notifications-group-title">Cette semaine</h3>
-                
-                <!-- Notification lue -->
-                <article class="notification-card" data-id="6">
-                    <div class="notification-icon notification-icon-success">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                            <polyline points="14 2 14 8 20 8"/>
-                            <polyline points="9 15 11 17 15 13"/>
-                        </svg>
-                    </div>
-                    <div class="notification-content">
-                        <h4 class="notification-title">Paiement confirmé</h4>
-                        <p class="notification-message">Votre paiement de 820 000 FCFA pour la facture de Février 2026 a été reçu</p>
-                        <span class="notification-time">Il y a 3 jours</span>
-                    </div>
-                    <button type="button" class="notification-action" onclick="ouvrirNotification(6, 'detail-facture.html?id=2')">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="9 18 15 12 9 6"/>
-                        </svg>
-                    </button>
-                </article>
-                
-                <!-- Notification lue -->
-                <article class="notification-card" data-id="7">
-                    <div class="notification-icon notification-icon-info">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                            <polyline points="17 8 12 3 7 8"/>
-                            <line x1="12" y1="3" x2="12" y2="15"/>
-                        </svg>
-                    </div>
-                    <div class="notification-content">
-                        <h4 class="notification-title">Import réussi</h4>
-                        <p class="notification-message">5 nouveaux employés ont été importés via Excel et assignés aux corridors</p>
-                        <span class="notification-time">Il y a 5 jours</span>
-                    </div>
-                    <button type="button" class="notification-action" onclick="ouvrirNotification(7, 'employes.html')">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="9 18 15 12 9 6"/>
-                        </svg>
-                    </button>
-                </article>
-            </div>
-            
+      </div>
+      
+      <div class="notif-card unread">
+        <div class="notif-icon gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+        <div class="notif-content">
+          <p class="notif-title">Offre spéciale</p>
+          <p class="notif-text">-20% sur les abonnements premium jusqu'au 15 avril !</p>
+          <p class="notif-time">Il y a 1h</p>
         </div>
-        
-        <!-- État vide -->
-        <div class="notifications-empty hidden" id="notificationsEmpty">
-            <div class="empty-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-                    <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-                </svg>
-            </div>
-            <h3 class="empty-title">Aucune notification</h3>
-            <p class="empty-message">Vous êtes à jour ! Toutes vos notifications ont été lues.</p>
+      </div>
+      
+      <div class="notif-card unread">
+        <div class="notif-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+        <div class="notif-content">
+          <p class="notif-title">Paiement confirmé</p>
+          <p class="notif-text">Votre réservation pour demain 06:30 est confirmée.</p>
+          <p class="notif-time">Il y a 3h</p>
         </div>
-        
-    </main>
-    
-    <!-- Scripts -->
-    <script src="js/supabase-config.js"></script>
-    <script src="js/app.js"></script>
-    <script>
-        // Données des notifications
-        let notifications = [
-            { id: 1, lue: false, importante: true },
-            { id: 2, lue: false, importante: false },
-            { id: 3, lue: false, importante: false },
-            { id: 4, lue: true, importante: false },
-            { id: 5, lue: true, importante: false },
-            { id: 6, lue: true, importante: false },
-            { id: 7, lue: true, importante: false }
-        ];
-        
-        // Initialisation
-        document.addEventListener('DOMContentLoaded', function() {
-            // Vérifier authentification
-            const entrepriseData = W2KApp.Utils.storage.get('entreprise');
-            if (!entrepriseData) {
-                window.location.href = 'connexion.html';
-                return;
-            }
-            
-            mettreAJourCompteurs();
-        });
-        
-        // Mettre à jour les compteurs
-        function mettreAJourCompteurs() {
-            const nonLues = notifications.filter(n => !n.lue).length;
-            const toutes = notifications.length;
-            
-            document.getElementById('countToutes').textContent = toutes;
-            document.getElementById('countNonLues').textContent = nonLues;
-            
-            // Masquer bouton si toutes lues
-            if (nonLues === 0) {
-                document.getElementById('btnMarquerLues').style.display = 'none';
-            }
-        }
-        
-        // Filtrer notifications
-        function filtrerNotifications(filtre) {
-            // Mettre à jour boutons
-            document.querySelectorAll('.notif-filter').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            document.querySelector(`[data-filter="${filtre}"]`).classList.add('active');
-            
-            // Filtrer cartes
-            const cartes = document.querySelectorAll('.notification-card');
-            let visibles = 0;
-            
-            cartes.forEach(carte => {
-                let visible = true;
-                
-                if (filtre === 'non-lues' && !carte.classList.contains('non-lue')) {
-                    visible = false;
-                }
-                if (filtre === 'importantes' && !carte.classList.contains('importante')) {
-                    visible = false;
-                }
-                
-                carte.style.display = visible ? 'flex' : 'none';
-                if (visible) visibles++;
-            });
-            
-            // Afficher/masquer les groupes vides
-            document.querySelectorAll('.notifications-group').forEach(groupe => {
-                const cartesVisibles = groupe.querySelectorAll('.notification-card[style*="flex"], .notification-card:not([style*="none"])');
-                groupe.style.display = cartesVisibles.length > 0 ? 'block' : 'none';
-            });
-            
-            // État vide
-            const emptyState = document.getElementById('notificationsEmpty');
-            const liste = document.getElementById('notificationsList');
-            
-            if (visibles === 0) {
-                emptyState.classList.remove('hidden');
-                liste.style.display = 'none';
-            } else {
-                emptyState.classList.add('hidden');
-                liste.style.display = 'block';
-            }
-        }
-        
-        // Ouvrir notification
-        function ouvrirNotification(id, url) {
-            // Marquer comme lue
-            const carte = document.querySelector(`[data-id="${id}"]`);
-            carte.classList.remove('non-lue');
-            
-            // Mettre à jour données
-            const notif = notifications.find(n => n.id === id);
-            if (notif) notif.lue = true;
-            
-            mettreAJourCompteurs();
-            
-            // Naviguer
-            if (url) {
-                window.location.href = url;
-            }
-        }
-        
-        // Marquer toutes comme lues
-        function marquerToutesLues() {
-            const cartes = document.querySelectorAll('.notification-card.non-lue');
-            cartes.forEach(carte => {
-                carte.classList.remove('non-lue');
-            });
-            
-            // Mettre à jour données
-            notifications.forEach(n => n.lue = true);
-            
-            mettreAJourCompteurs();
-            
-            W2KApp.Notifications.show('Toutes les notifications ont été marquées comme lues', 'success');
-        }
-    </script>
+      </div>
+      
+      <div class="notif-card">
+        <div class="notif-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></div>
+        <div class="notif-content">
+          <p class="notif-title">Nouvelle ligne disponible</p>
+          <p class="notif-text">La ligne Bingerville → Zone 4 est maintenant active.</p>
+          <p class="notif-time">Hier</p>
+        </div>
+      </div>
+      
+      <div class="notif-card">
+        <div class="notif-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+        <div class="notif-content">
+          <p class="notif-title">Profil complété</p>
+          <p class="notif-text">Merci d'avoir complété votre profil ! Profitez de toutes les fonctionnalités.</p>
+          <p class="notif-time">Lun. 30 Mars</p>
+        </div>
+      </div>
+    </div>
+  </main>
+  
+  <nav class="bottom-nav">
+    <a href="accueil.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Accueil</span></a>
+    <a href="lignes.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg><span>Lignes</span></a>
+    <a href="suivi.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg><span>Suivi</span></a>
+    <a href="notifications.html" class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><span>Notifs</span></a>
+    <a href="profil.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Profil</span></a>
+  </nav>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    /* Icônes par type de notification */
+    const ICONES = {
+      rappel:        `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>`,
+      confirmation:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`,
+      paiement:      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>`,
+      changement:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>`,
+      nouvelle_ligne:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>`,
+      promo:         `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
+      info:          `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`
+    };
+
+    const TYPES_OR = ['promo', 'paiement'];
+
+    function tempsRelatif(dateStr) {
+      const diff = Date.now() - new Date(dateStr).getTime();
+      const min = Math.floor(diff / 60000);
+      if (min < 60) return `Il y a ${min} min`;
+      const h = Math.floor(min / 60);
+      if (h < 24) return `Il y a ${h}h`;
+      return new Date(dateStr).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' });
+    }
+
+    function construireNotifs(notifs) {
+      if (!notifs.length) {
+        return '<p style="text-align:center;color:rgba(255,255,255,0.5);padding:40px 0;">Aucune notification.</p>';
+      }
+      return notifs.map(n => {
+        const icone = ICONES[n.type] || ICONES.info;
+        const classeOr = TYPES_OR.includes(n.type) ? ' gold' : '';
+        const classeUnread = !n.lu ? ' unread' : '';
+        return `
+          <div class="notif-card${classeUnread}" onclick="lireNotif('${n.id}', this)">
+            <div class="notif-icon${classeOr}">${icone}</div>
+            <div class="notif-content">
+              <p class="notif-title">${n.titre}</p>
+              <p class="notif-text">${n.message}</p>
+              <p class="notif-time">${tempsRelatif(n.created_at)}</p>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    async function lireNotif(id, element) {
+      if (element.classList.contains('unread')) {
+        element.classList.remove('unread');
+        try { await marquerNotificationLue(id); } catch (_) {}
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', async function() {
+      const container = document.querySelector('.notif-section');
+      container.innerHTML = '<p style="text-align:center;color:rgba(255,255,255,0.5);padding:40px 0;">Chargement...</p>';
+
+      try {
+        const notifs = await getNotifications();
+        const nonLues = notifs.filter(n => !n.lu).length;
+        document.querySelector('.hero-subtitle').textContent =
+          nonLues > 0 ? `${nonLues} nouvelle${nonLues > 1 ? 's' : ''}` : 'Toutes lues';
+        container.innerHTML = construireNotifs(notifs);
+      } catch (err) {
+        container.innerHTML = '<p style="text-align:center;color:#E74C3C;padding:40px 0;">Erreur lors du chargement.</p>';
+      }
+    });
+  </script>
 </body>
 </html>

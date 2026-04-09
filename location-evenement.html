@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#1B2A4A">
+  <link rel="manifest" href="manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/app.css">
+  <title>Location Événement - Navette Express</title>
+  <style>
+    .hero-banner { position: relative; height: 220px; margin: 16px; border-radius: 16px; overflow: hidden; }
+    .hero-banner img { width: 100%; height: 100%; object-fit: cover; }
+    .hero-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 0%, rgba(15,26,46,0.95) 100%); display: flex; flex-direction: column; justify-content: flex-end; padding: 20px; }
+    .hero-title { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+    .hero-subtitle { font-size: 14px; color: rgba(255,255,255,0.7); }
+    .event-section { padding: 0 16px; margin-bottom: 24px; }
+    .section-title { font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+    .event-types { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .event-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.2s; }
+    .event-card:hover { background: rgba(255,255,255,0.08); }
+    .event-card.selected { border-color: #2EC4B6; background: rgba(46,196,182,0.1); }
+    .event-icon { width: 50px; height: 50px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; background: rgba(200,169,81,0.15); border-radius: 12px; }
+    .event-icon svg { width: 26px; height: 26px; color: #C8A951; }
+    .event-name { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+    .event-price { font-size: 13px; color: #2EC4B6; }
+    .form-group { margin-bottom: 16px; }
+    .form-label { display: block; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.7); margin-bottom: 8px; }
+    .form-input { width: 100%; padding: 14px 16px; font-size: 15px; font-family: inherit; color: #FFFFFF; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; }
+    .form-input:focus { outline: none; border-color: #2EC4B6; }
+    .submit-btn { width: 100%; padding: 16px; margin-top: 24px; font-size: 16px; font-weight: 600; color: #0F1A2E; background: #C8A951; border: none; border-radius: 12px; cursor: pointer; font-family: inherit; }
+    .features { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+    .feature { display: flex; align-items: center; gap: 6px; padding: 8px 14px; background: rgba(46,196,182,0.1); border-radius: 20px; font-size: 13px; color: #2EC4B6; }
+    .feature svg { width: 16px; height: 16px; }
+  </style>
+</head>
+<body class="no-nav">
+  <header class="header">
+    <button class="header-btn" onclick="history.back()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <h1 class="header-title">Location Événement</h1>
+    <div style="width:24px;"></div>
+  </header>
+  
+  <main class="page-with-header" style="padding-bottom:40px;">
+    <div class="hero-banner">
+      <picture>
+        <source srcset="images/ecrans/passagers-evenement.webp" type="image/webp">
+        <img src="images/ecrans/passagers-evenement.jpg" alt="Location Événement" loading="eager">
+      </picture>
+      <div class="hero-overlay">
+        <h2 class="hero-title">Privatisez un bus</h2>
+        <p class="hero-subtitle">Mariages, séminaires, excursions...</p>
+      </div>
+    </div>
+    
+    <div class="event-section">
+      <h3 class="section-title">Type d'événement</h3>
+      <div class="event-types">
+        <div class="event-card selected">
+          <div class="event-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div>
+          <p class="event-name">Mariage</p>
+          <p class="event-price">À partir de 150 000 FCFA</p>
+        </div>
+        <div class="event-card">
+          <div class="event-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
+          <p class="event-name">Séminaire</p>
+          <p class="event-price">À partir de 100 000 FCFA</p>
+        </div>
+        <div class="event-card">
+          <div class="event-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></div>
+          <p class="event-name">Excursion</p>
+          <p class="event-price">À partir de 80 000 FCFA</p>
+        </div>
+        <div class="event-card">
+          <div class="event-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+          <p class="event-name">Autre</p>
+          <p class="event-price">Sur devis</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="event-section">
+      <h3 class="section-title">Détails de la réservation</h3>
+      <div class="form-group">
+        <label class="form-label">Date de l'événement</label>
+        <input type="date" class="form-input">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Nombre de passagers</label>
+        <input type="number" class="form-input" placeholder="Ex: 30" min="10" max="50">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Point de départ</label>
+        <input type="text" class="form-input" placeholder="Adresse de départ">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Destination</label>
+        <input type="text" class="form-input" placeholder="Adresse d'arrivée">
+      </div>
+    </div>
+    
+    <div class="event-section">
+      <h3 class="section-title">Inclus dans le service</h3>
+      <div class="features">
+        <div class="feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Chauffeur professionnel</div>
+        <div class="feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Bus climatisé</div>
+        <div class="feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Eau à bord</div>
+        <div class="feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Wifi gratuit</div>
+      </div>
+      
+      <button class="submit-btn" onclick="submitRequest()">Demander un devis</button>
+    </div>
+  </main>
+  
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    const TYPES_EVENEMENT = {
+      'Mariage': 'mariage',
+      'Séminaire': 'meeting',
+      'Excursion': 'excursion',
+      'Autre': 'autre'
+    };
+
+    document.querySelectorAll('.event-card').forEach(card => {
+      card.addEventListener('click', function() {
+        document.querySelectorAll('.event-card').forEach(c => c.classList.remove('selected'));
+        this.classList.add('selected');
+      });
+    });
+
+    async function submitRequest() {
+      const btn = document.querySelector('.submit-btn');
+
+      const selectedCard = document.querySelector('.event-card.selected');
+      const typeLabel = selectedCard ? selectedCard.querySelector('.event-name').textContent.trim() : 'Autre';
+      const typeEvenement = TYPES_EVENEMENT[typeLabel] || 'autre';
+
+      const inputs = document.querySelectorAll('.form-input');
+      const dateEvenement = inputs[0].value;
+      const nombrePersonnes = parseInt(inputs[1].value || '0', 10);
+      const lieuDepart = inputs[2].value.trim();
+      const lieuDestination = inputs[3].value.trim();
+
+      if (!dateEvenement || !lieuDepart || !lieuDestination) {
+        alert('Veuillez remplir tous les champs.');
+        return;
+      }
+
+      btn.textContent = 'Envoi en cours...';
+      btn.disabled = true;
+
+      try {
+        await creerDemandeEvenement({
+          type_evenement: typeEvenement,
+          lieu_depart: lieuDepart,
+          lieu_destination: lieuDestination,
+          date_evenement: dateEvenement,
+          nombre_personnes: nombrePersonnes || null
+        });
+        alert('Demande envoyée ! Nous vous contacterons sous 24h.');
+        navigateTo('accueil.html');
+      } catch (err) {
+        btn.textContent = 'Demander un devis';
+        btn.disabled = false;
+        alert('Erreur lors de l\'envoi. Veuillez réessayer.');
+      }
+    }
+  </script>
+</body>
+</html>
