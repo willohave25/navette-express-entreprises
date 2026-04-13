@@ -1,10 +1,11 @@
 /**
  * Configuration Supabase — Navette Express Espace Entreprise
+ * Placeholder — Clés API à renseigner lors de l'intégration
  * W2K-Digital 2025
  */
 
 const SupabaseConfig = {
-  /* Clés API Supabase */
+  /* Clés API Supabase (à remplir) */
   url: 'https://ilycnutphhmuvaonkrsa.supabase.co',
   anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlseWNudXRwaGhtdXZhb25rcnNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1MjY5NDcsImV4cCI6MjA5MDEwMjk0N30.80ipBwMVvAkC2f0Oz2Wzl8E6GjMwlLCoE72XbePtmnM',
   
