@@ -1,451 +1,277 @@
 /**
- * Configuration Supabase — Navette Express Espace Entreprise
- * Placeholder — Clés API à renseigner lors de l'intégration
- * W2K-Digital 2025
+ * NAVETTE EXPRESS — API Bridge (remplace Supabase)
+ * PWA Entreprises — Toutes les fonctions appellent https://api.jaebets-holding.com
+ * JAEBETS HOLDING — W2K-Digital 2025
  */
 
-const SupabaseConfig = {
-  /* Clés API Supabase (à remplir) */
-  url: 'https://ilycnutphhmuvaonkrsa.supabase.co',
-  anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlseWNudXRwaGhtdXZhb25rcnNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1MjY5NDcsImV4cCI6MjA5MDEwMjk0N30.80ipBwMVvAkC2f0Oz2Wzl8E6GjMwlLCoE72XbePtmnM',
-  
-  /* Tables utilisées */
-  tables: {
-    entreprises: 'entreprises',
-    employes: 'employes',
-    corridors: 'corridors',
-    factures: 'factures',
-    notifications: 'notifications',
-    presences: 'presences'
-  },
-  
-  /* Client Supabase (initialisé plus tard) */
-  client: null,
-  
-  /**
-   * Initialiser le client Supabase
-   */
-  init: function() {
-    if (typeof supabase === 'undefined') {
-      console.warn('[Supabase] SDK non chargé. Ajoutez le script Supabase.');
-      return null;
+const API_BASE = 'https://api.jaebets-holding.com';
+
+// ─── Helpers internes ─────────────────────────────────────────────────
+
+function _getToken() {
+  try {
+    const s = localStorage.getItem('navette_session');
+    if (s) {
+      const parsed = JSON.parse(s);
+      return parsed.token || parsed.access_token || null;
     }
-    
-    this.client = supabase.createClient(this.url, this.anonKey);
-    console.log('[Supabase] Client initialisé');
-    return this.client;
+    return localStorage.getItem('userToken');
+  } catch(e) { return null; }
+}
+
+function _getEntreprise() {
+  try {
+    const s = localStorage.getItem('navette_entreprise');
+    return s ? JSON.parse(s) : null;
+  } catch(e) { return null; }
+}
+
+async function _apiFetch(path, options = {}) {
+  const token = _getToken();
+  const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
+  if (token) headers['Authorization'] = 'Bearer ' + token;
+  const res = await fetch(API_BASE + path, { ...options, headers });
+  if (res.status === 401) {
+    localStorage.removeItem('navette_session');
+    localStorage.removeItem('navette_user');
+    localStorage.removeItem('navette_entreprise');
+    window.location.href = 'connexion.html';
+    return null;
+  }
+  return res.json();
+}
+
+// ─── SupabaseConfig (garde la même interface) ─────────────────────────
+
+const SupabaseConfig = {
+  tables: {
+    entreprises: 'companies',
+    employes: 'company_employees',
+    corridors: 'lines',
+    factures: 'invoices',
+    notifications: 'notifications',
+    presences: 'boarding_records'
   },
-  
-  /**
-   * Connexion entreprise
-   * @param {string} email - Courriel entreprise
-   * @param {string} password - Mot de passe
-   * @returns {Promise} Résultat connexion
-   */
+
+  client: null,
+  init: function() { return this; },
+
+  // ─── AUTH ────────────────────────────────────────────────────────────
+
   login: async function(email, password) {
-    if (!this.client) this.init();
-    
     try {
-      const { data, error } = await this.client.auth.signInWithPassword({
-        email: email,
-        password: password
+      const res = await fetch(API_BASE + '/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
       });
-      
-      if (error) throw error;
-      
-      /* Stocker session */
-      localStorage.setItem('navette_session', JSON.stringify(data.session));
-      localStorage.setItem('navette_user', JSON.stringify(data.user));
-      
-      return { success: true, data: data };
+      const json = await res.json();
+      if (!json.success) return { success: false, error: json.error?.message || 'Identifiants incorrects' };
+
+      const token = json.data.token;
+      const user = json.data.user;
+
+      localStorage.setItem('navette_session', JSON.stringify({ token, user }));
+      localStorage.setItem('navette_user', JSON.stringify(user));
+
+      return { success: true, data: { session: { token }, user } };
     } catch (error) {
       console.error('[Supabase] Erreur connexion:', error.message);
-      return { success: false, error: error.message };
+      return { success: false, error: 'Impossible de contacter le serveur.' };
     }
   },
-  
-  /**
-   * Inscription entreprise
-   * @param {Object} entreprise - Données entreprise
-   * @returns {Promise} Résultat inscription
-   */
+
   register: async function(entreprise) {
-    if (!this.client) this.init();
-    
     try {
-      /* Créer compte auth */
-      const { data: authData, error: authError } = await this.client.auth.signUp({
-        email: entreprise.email,
-        password: entreprise.password,
-        options: {
-          data: {
-            nom_entreprise: entreprise.nom,
-            role: 'entreprise'
-          }
-        }
-      });
-      
-      if (authError) throw authError;
-      
-      /* Créer profil entreprise dans table */
-      const { data: profileData, error: profileError } = await this.client
-        .from(this.tables.entreprises)
-        .insert({
-          user_id: authData.user.id,
-          nom: entreprise.nom,
+      const res = await fetch(API_BASE + '/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: entreprise.email,
+          password: entreprise.password,
+          full_name: entreprise.responsableNom || entreprise.nom,
+          role: 'company',
+          company_name: entreprise.nom,
           rccm: entreprise.rccm,
           secteur: entreprise.secteur,
           nombre_employes: entreprise.nombreEmployes,
           adresse: entreprise.adresse,
-          responsable_nom: entreprise.responsableNom,
-          telephone: entreprise.telephone
+          phone: entreprise.telephone
         })
-        .select()
-        .single();
-      
-      if (profileError) throw profileError;
-      
-      return { success: true, data: profileData };
+      });
+      const json = await res.json();
+      if (!json.success) return { success: false, error: json.error?.message || 'Erreur inscription' };
+      return { success: true, data: json.data };
     } catch (error) {
       console.error('[Supabase] Erreur inscription:', error.message);
       return { success: false, error: error.message };
     }
   },
-  
-  /**
-   * Déconnexion
-   * @returns {Promise} Résultat déconnexion
-   */
+
   logout: async function() {
-    if (!this.client) this.init();
-    
-    try {
-      await this.client.auth.signOut();
-      localStorage.removeItem('navette_session');
-      localStorage.removeItem('navette_user');
-      localStorage.removeItem('navette_entreprise');
-      return { success: true };
-    } catch (error) {
-      console.error('[Supabase] Erreur déconnexion:', error.message);
-      return { success: false, error: error.message };
-    }
+    localStorage.removeItem('navette_session');
+    localStorage.removeItem('navette_user');
+    localStorage.removeItem('navette_entreprise');
+    return { success: true };
   },
-  
-  /**
-   * Récupérer profil entreprise connectée
-   * @returns {Promise} Données entreprise
-   */
+
+  // ─── ENTREPRISE ───────────────────────────────────────────────────────
+
   getEntreprise: async function() {
-    if (!this.client) this.init();
-    
     try {
-      const { data: { user } } = await this.client.auth.getUser();
-      if (!user) throw new Error('Non connecté');
-      
-      const { data, error } = await this.client
-        .from(this.tables.entreprises)
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
-      
-      if (error) throw error;
-      
-      localStorage.setItem('navette_entreprise', JSON.stringify(data));
-      return { success: true, data: data };
+      const json = await _apiFetch('/api/companies/me');
+      if (!json?.success) throw new Error(json?.error?.message || 'Erreur');
+      localStorage.setItem('navette_entreprise', JSON.stringify(json.data));
+      return { success: true, data: json.data };
     } catch (error) {
       console.error('[Supabase] Erreur récupération entreprise:', error.message);
       return { success: false, error: error.message };
     }
   },
-  
-  /**
-   * Récupérer liste des corridors
-   * @returns {Promise} Liste corridors
-   */
+
+  // ─── CORRIDORS (= lignes) ─────────────────────────────────────────────
+
   getCorridors: async function() {
-    if (!this.client) this.init();
-    
     try {
-      const entreprise = JSON.parse(localStorage.getItem('navette_entreprise'));
-      if (!entreprise) throw new Error('Entreprise non trouvée');
-      
-      const { data, error } = await this.client
-        .from(this.tables.corridors)
-        .select('*')
-        .eq('entreprise_id', entreprise.id)
-        .order('created_at', { ascending: false });
-      
-      if (error) throw error;
-      return { success: true, data: data };
+      const entreprise = _getEntreprise();
+      const qs = entreprise ? '?company_id=' + entreprise.id : '';
+      const json = await _apiFetch('/api/lines' + qs);
+      const list = json?.data || json?.lines || [];
+      return { success: true, data: list };
     } catch (error) {
       console.error('[Supabase] Erreur récupération corridors:', error.message);
       return { success: false, error: error.message };
     }
   },
-  
-  /**
-   * Créer un corridor
-   * @param {Object} corridor - Données corridor
-   * @returns {Promise} Corridor créé
-   */
+
   createCorridor: async function(corridor) {
-    if (!this.client) this.init();
-    
     try {
-      const entreprise = JSON.parse(localStorage.getItem('navette_entreprise'));
-      if (!entreprise) throw new Error('Entreprise non trouvée');
-      
-      const { data, error } = await this.client
-        .from(this.tables.corridors)
-        .insert({
-          entreprise_id: entreprise.id,
-          zone_depart: corridor.zoneDepart,
+      const entreprise = _getEntreprise();
+      const json = await _apiFetch('/api/lines', {
+        method: 'POST',
+        body: JSON.stringify({
+          company_id: entreprise?.id,
+          origin: corridor.zoneDepart,
           destination: corridor.destination,
-          horaire_aller: corridor.horaireAller,
-          horaire_retour: corridor.horaireRetour,
-          type_bus: corridor.typeBus,
+          departure_time: corridor.horaireAller,
+          return_time: corridor.horaireRetour,
+          vehicle_type: corridor.typeBus,
           options: corridor.options,
           distance_km: corridor.distanceKm,
-          cout_mensuel: corridor.coutMensuel,
-          statut: 'actif'
+          price_monthly: corridor.coutMensuel,
+          status: 'active'
         })
-        .select()
-        .single();
-      
-      if (error) throw error;
-      return { success: true, data: data };
+      });
+      if (!json?.success) throw new Error(json?.error?.message || 'Erreur');
+      return { success: true, data: json.data };
     } catch (error) {
       console.error('[Supabase] Erreur création corridor:', error.message);
       return { success: false, error: error.message };
     }
   },
-  
-  /**
-   * Récupérer liste des employés
-   * @returns {Promise} Liste employés
-   */
+
+  // ─── EMPLOYÉS ─────────────────────────────────────────────────────────
+
   getEmployes: async function() {
-    if (!this.client) this.init();
-    
     try {
-      const entreprise = JSON.parse(localStorage.getItem('navette_entreprise'));
-      if (!entreprise) throw new Error('Entreprise non trouvée');
-      
-      const { data, error } = await this.client
-        .from(this.tables.employes)
-        .select('*, corridors(nom)')
-        .eq('entreprise_id', entreprise.id)
-        .order('nom', { ascending: true });
-      
-      if (error) throw error;
-      return { success: true, data: data };
+      const json = await _apiFetch('/api/companies/employees');
+      const list = json?.data || [];
+      return { success: true, data: list };
     } catch (error) {
       console.error('[Supabase] Erreur récupération employés:', error.message);
       return { success: false, error: error.message };
     }
   },
-  
-  /**
-   * Ajouter un employé
-   * @param {Object} employe - Données employé
-   * @returns {Promise} Employé créé
-   */
+
   addEmploye: async function(employe) {
-    if (!this.client) this.init();
-    
     try {
-      const entreprise = JSON.parse(localStorage.getItem('navette_entreprise'));
-      if (!entreprise) throw new Error('Entreprise non trouvée');
-      
-      const { data, error } = await this.client
-        .from(this.tables.employes)
-        .insert({
-          entreprise_id: entreprise.id,
+      const entreprise = _getEntreprise();
+      const json = await _apiFetch('/api/companies/employees', {
+        method: 'POST',
+        body: JSON.stringify({
+          company_id: entreprise?.id,
           nom: employe.nom,
           telephone: employe.telephone,
           email: employe.email,
           quartier: employe.quartier,
-          corridor_id: employe.corridorId || null,
-          statut: 'actif'
+          corridor_id: employe.corridorId || null
         })
-        .select()
-        .single();
-      
-      if (error) throw error;
-      return { success: true, data: data };
+      });
+      if (!json?.success) throw new Error(json?.error?.message || 'Erreur');
+      return { success: true, data: json.data };
     } catch (error) {
       console.error('[Supabase] Erreur ajout employé:', error.message);
       return { success: false, error: error.message };
     }
   },
-  
-  /**
-   * Import Excel employés (bulk insert)
-   * @param {Array} employes - Liste employés à importer
-   * @returns {Promise} Résultat import
-   */
+
   importEmployes: async function(employes) {
-    if (!this.client) this.init();
-    
     try {
-      const entreprise = JSON.parse(localStorage.getItem('navette_entreprise'));
-      if (!entreprise) throw new Error('Entreprise non trouvée');
-      
-      const employesWithEntreprise = employes.map(emp => ({
-        entreprise_id: entreprise.id,
-        nom: emp.nom,
-        telephone: emp.telephone,
-        email: emp.email,
-        quartier: emp.quartier,
-        statut: 'actif'
-      }));
-      
-      const { data, error } = await this.client
-        .from(this.tables.employes)
-        .insert(employesWithEntreprise)
-        .select();
-      
-      if (error) throw error;
-      return { success: true, data: data, count: data.length };
+      const entreprise = _getEntreprise();
+      const json = await _apiFetch('/api/companies/employees/import', {
+        method: 'POST',
+        body: JSON.stringify({ company_id: entreprise?.id, employes })
+      });
+      if (!json?.success) throw new Error(json?.error?.message || 'Erreur');
+      return { success: true, data: json.data, count: json.data?.length || 0 };
     } catch (error) {
       console.error('[Supabase] Erreur import employés:', error.message);
       return { success: false, error: error.message };
     }
   },
-  
-  /**
-   * Récupérer factures
-   * @returns {Promise} Liste factures
-   */
+
+  // ─── FACTURES ─────────────────────────────────────────────────────────
+
   getFactures: async function() {
-    if (!this.client) this.init();
-    
     try {
-      const entreprise = JSON.parse(localStorage.getItem('navette_entreprise'));
-      if (!entreprise) throw new Error('Entreprise non trouvée');
-      
-      const { data, error } = await this.client
-        .from(this.tables.factures)
-        .select('*')
-        .eq('entreprise_id', entreprise.id)
-        .order('periode', { ascending: false });
-      
-      if (error) throw error;
-      return { success: true, data: data };
+      const json = await _apiFetch('/api/companies/invoices');
+      const list = json?.data || [];
+      return { success: true, data: list };
     } catch (error) {
       console.error('[Supabase] Erreur récupération factures:', error.message);
       return { success: false, error: error.message };
     }
   },
-  
-  /**
-   * Récupérer notifications
-   * @returns {Promise} Liste notifications
-   */
+
+  // ─── NOTIFICATIONS ────────────────────────────────────────────────────
+
   getNotifications: async function() {
-    if (!this.client) this.init();
-    
     try {
-      const entreprise = JSON.parse(localStorage.getItem('navette_entreprise'));
-      if (!entreprise) throw new Error('Entreprise non trouvée');
-      
-      const { data, error } = await this.client
-        .from(this.tables.notifications)
-        .select('*')
-        .eq('entreprise_id', entreprise.id)
-        .order('created_at', { ascending: false })
-        .limit(50);
-      
-      if (error) throw error;
-      return { success: true, data: data };
+      const json = await _apiFetch('/api/notifications?limit=50');
+      const list = json?.data || [];
+      return { success: true, data: list };
     } catch (error) {
       console.error('[Supabase] Erreur récupération notifications:', error.message);
       return { success: false, error: error.message };
     }
   },
-  
-  /**
-   * Marquer notification comme lue
-   * @param {string} notificationId - ID notification
-   * @returns {Promise} Résultat
-   */
+
   markNotificationRead: async function(notificationId) {
-    if (!this.client) this.init();
-    
     try {
-      const { error } = await this.client
-        .from(this.tables.notifications)
-        .update({ lu: true })
-        .eq('id', notificationId);
-      
-      if (error) throw error;
+      await _apiFetch('/api/notifications/' + notificationId + '/read', { method: 'PUT' });
       return { success: true };
     } catch (error) {
       console.error('[Supabase] Erreur marquage notification:', error.message);
       return { success: false, error: error.message };
     }
   },
-  
-  /**
-   * Récupérer données suivi transport temps réel
-   * @param {string} corridorId - ID corridor (optionnel)
-   * @returns {Promise} Données suivi
-   */
+
+  // ─── SUIVI TRANSPORT ──────────────────────────────────────────────────
+
   getSuiviTransport: async function(corridorId = null) {
-    if (!this.client) this.init();
-    
     try {
-      const entreprise = JSON.parse(localStorage.getItem('navette_entreprise'));
-      if (!entreprise) throw new Error('Entreprise non trouvée');
-      
-      let query = this.client
-        .from(this.tables.presences)
-        .select('*, employes(nom), corridors(nom, bus_immatriculation)')
-        .eq('date', new Date().toISOString().split('T')[0]);
-      
-      if (corridorId) {
-        query = query.eq('corridor_id', corridorId);
-      }
-      
-      const { data, error } = await query;
-      
-      if (error) throw error;
-      return { success: true, data: data };
+      const qs = corridorId ? '?line_id=' + corridorId : '';
+      const json = await _apiFetch('/api/tracking/live' + qs);
+      return { success: true, data: json?.data || [] };
     } catch (error) {
       console.error('[Supabase] Erreur récupération suivi:', error.message);
       return { success: false, error: error.message };
     }
   },
-  
-  /**
-   * Souscrire aux mises à jour temps réel
-   * @param {string} table - Nom table
-   * @param {Function} callback - Fonction callback
-   * @returns {Object} Subscription
-   */
-  subscribeRealtime: function(table, callback) {
-    if (!this.client) this.init();
-    
-    const entreprise = JSON.parse(localStorage.getItem('navette_entreprise'));
-    if (!entreprise) return null;
-    
-    return this.client
-      .channel(`${table}_changes`)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: table,
-          filter: `entreprise_id=eq.${entreprise.id}`
-        },
-        callback
-      )
-      .subscribe();
-  }
+
+  // Stub — pas de realtime Supabase
+  subscribeRealtime: function(table, callback) { return null; }
 };
 
 /* Export pour utilisation globale */
 window.SupabaseConfig = SupabaseConfig;
-
-console.log('[Supabase] Configuration chargée (placeholder)');
