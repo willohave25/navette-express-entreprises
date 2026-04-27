@@ -658,40 +658,69 @@
             });
         }
         
+        const API_BASE = 'https://api.jaebets-holding.com';
+        let factureEnCours = null;
+
         // Modal paiement
-        function ouvrirPaiement() {
+        function ouvrirPaiement(factureId, montant) {
+            factureEnCours = { factureId, montant };
+            // Afficher le montant réel dans le modal
+            const el = document.querySelector('.paiement-value');
+            if (el && montant) el.textContent = new Intl.NumberFormat('fr-FR').format(montant) + ' FCFA';
             document.getElementById('modalPaiement').classList.remove('hidden');
         }
-        
+
         function fermerModal() {
-            document.querySelectorAll('.modal-overlay').forEach(m => {
-                m.classList.add('hidden');
-            });
+            document.querySelectorAll('.modal-overlay').forEach(m => m.classList.add('hidden'));
         }
-        
-        // Procéder au paiement
-        function procederPaiement() {
+
+        // Procéder au paiement via VPS
+        async function procederPaiement() {
             const methode = document.querySelector('input[name="methodePaiement"]:checked').value;
-            
-            // Simuler paiement (mode démo)
-            W2KApp.Notifications.show('Redirection vers ' + getMethodeName(methode) + '...', 'info');
-            
-            setTimeout(function() {
-                // En production: intégration FineoPay
-                // FineoPayAPI.initPayment({ amount: 850000, method: methode })
-                
-                W2KApp.Notifications.show('Mode démonstration - Paiement simulé', 'success');
+            const methodMap = { 'orange-money': 'orange_money', 'mtn-money': 'mtn_momo', 'moov-money': 'moov_money', 'virement': 'bank_transfer' };
+            const confirmBtn = document.querySelector('#modalPaiement .btn-primary');
+
+            // Récupérer token depuis navette_session
+            let token = null;
+            try {
+                const session = JSON.parse(localStorage.getItem('navette_session') || '{}');
+                token = session.token || null;
+            } catch(e) {}
+
+            if (!token) { alert('Session expirée. Reconnectez-vous.'); window.location.href = 'connexion.html'; return; }
+
+            const montant = factureEnCours?.montant || 0;
+            if (!montant) { alert('Montant introuvable.'); return; }
+
+            confirmBtn.disabled = true;
+            confirmBtn.textContent = 'Traitement...';
+
+            try {
+                const res = await fetch(API_BASE + '/api/payments/initiate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                    body: JSON.stringify({
+                        amount: montant,
+                        payment_method: methodMap[methode],
+                        description: 'Paiement facture entreprise' + (factureEnCours?.factureId ? ' #' + factureEnCours.factureId : '')
+                    })
+                });
+                const data = await res.json();
+                if (!data.success) throw new Error(data.error?.message || 'Erreur paiement');
+
                 fermerModal();
-            }, 2000);
+                W2KApp.Notifications.show('Paiement confirmé ! Votre facture est en cours de traitement.', 'success');
+                setTimeout(() => window.location.reload(), 2000);
+            } catch(err) {
+                alert('Erreur : ' + err.message);
+            } finally {
+                confirmBtn.disabled = false;
+                confirmBtn.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Confirmer';
+            }
         }
-        
+
         function getMethodeName(methode) {
-            const noms = {
-                'orange-money': 'Orange Money',
-                'mtn-money': 'MTN Mobile Money',
-                'moov-money': 'Moov Money',
-                'virement': 'Virement bancaire'
-            };
+            const noms = { 'orange-money': 'Orange Money', 'mtn-money': 'MTN Mobile Money', 'moov-money': 'Moov Money', 'virement': 'Virement bancaire' };
             return noms[methode] || methode;
         }
         

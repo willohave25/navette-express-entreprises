@@ -502,41 +502,63 @@
             }, 1500);
         }
         
+        const API_BASE = 'https://api.jaebets-holding.com';
+
         // Modal paiement
         function ouvrirPaiement() {
             document.getElementById('modalPaiement').classList.remove('hidden');
         }
-        
+
         function fermerModal() {
-            document.querySelectorAll('.modal-overlay').forEach(m => {
-                m.classList.add('hidden');
-            });
+            document.querySelectorAll('.modal-overlay').forEach(m => m.classList.add('hidden'));
         }
-        
-        // Procéder au paiement
-        function procederPaiement() {
+
+        // Procéder au paiement via VPS
+        async function procederPaiement() {
             const methode = document.querySelector('input[name="methodePaiement"]:checked').value;
-            
-            W2KApp.Notifications.show('Redirection vers ' + getMethodeName(methode) + '...', 'info');
-            
-            setTimeout(function() {
-                W2KApp.Notifications.show('Mode démonstration - Paiement simulé', 'success');
+            const methodMap = { 'orange-money': 'orange_money', 'mtn-money': 'mtn_momo', 'moov-money': 'moov_money', 'virement': 'bank_transfer' };
+            const confirmBtn = document.querySelector('#modalPaiement .btn-primary');
+
+            let token = null;
+            try { token = JSON.parse(localStorage.getItem('navette_session') || '{}').token; } catch(e) {}
+            if (!token) { alert('Session expirée. Reconnectez-vous.'); window.location.href = 'connexion.html'; return; }
+
+            // Récupérer montant depuis la page
+            const montantEl = document.querySelector('.paiement-value, .facture-total-amount, #montantFacture');
+            const montantTxt = montantEl ? montantEl.textContent.replace(/[^\d]/g, '') : '0';
+            const montant = parseInt(montantTxt) || 0;
+            const factureIdEl = document.querySelector('#factureNumero, .facture-numero');
+            const factureRef = factureIdEl ? factureIdEl.textContent.trim() : '';
+
+            confirmBtn.disabled = true;
+            confirmBtn.textContent = 'Traitement...';
+
+            try {
+                const res = await fetch(API_BASE + '/api/payments/initiate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                    body: JSON.stringify({
+                        amount: montant,
+                        payment_method: methodMap[methode],
+                        description: 'Paiement facture ' + factureRef
+                    })
+                });
+                const data = await res.json();
+                if (!data.success) throw new Error(data.error?.message || 'Erreur paiement');
+
                 fermerModal();
-                
-                // Rediriger vers facturation
-                setTimeout(function() {
-                    window.location.href = 'facturation.html';
-                }, 1500);
-            }, 2000);
+                W2KApp.Notifications.show('Paiement confirmé !', 'success');
+                setTimeout(() => window.location.href = 'facturation.html', 2000);
+            } catch(err) {
+                alert('Erreur : ' + err.message);
+            } finally {
+                confirmBtn.disabled = false;
+                confirmBtn.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Confirmer';
+            }
         }
-        
+
         function getMethodeName(methode) {
-            const noms = {
-                'orange-money': 'Orange Money',
-                'mtn-money': 'MTN Mobile Money',
-                'moov-money': 'Moov Money',
-                'virement': 'Virement bancaire'
-            };
+            const noms = { 'orange-money': 'Orange Money', 'mtn-money': 'MTN Mobile Money', 'moov-money': 'Moov Money', 'virement': 'Virement bancaire' };
             return noms[methode] || methode;
         }
         
