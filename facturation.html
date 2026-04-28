@@ -525,34 +525,58 @@
             const montant = factureEnCours?.montant;
             if (!montant) { alert('Montant introuvable.'); return; }
 
+            // OM / Wave → lien direct (overlay instructions)
             if (methode === 'orange-money' || methode === 'wave') {
                 fermerModal();
                 ouvrirInstructionsMobile(methode, montant);
                 return;
             }
 
-            const methodMap = { 'mtn-money':'mtn_momo', 'virement':'bank_transfer' };
+            // Virement → contact WhatsApp
+            if (methode === 'virement') {
+                fermerModal();
+                const msg = encodeURIComponent('Bonjour, je souhaite effectuer un virement pour ma facture de ' + fmt(montant) + '. Merci de m\'indiquer les coordonnées bancaires.');
+                window.open('https://wa.me/2250703285359?text=' + msg, '_blank');
+                return;
+            }
+
+            // MTN Mobile Money → FineoPay checkout-link (redirection)
             const token = getToken();
             if (!token) { window.location.href = 'connexion.html'; return; }
+
             const confirmBtn = document.querySelector('#modalPaiement .btn-primary');
             confirmBtn.disabled = true;
-            confirmBtn.textContent = 'Traitement...';
+            confirmBtn.textContent = 'Génération du lien...';
+
             try {
                 const res = await fetch(API_BASE + '/api/payments/initiate', {
-                    method:'POST',
-                    headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
-                    body: JSON.stringify({ amount:montant, payment_method:methodMap[methode]||'bank_transfer',
-                        description:'Facture '+(factureEnCours?.factureId||'') })
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                    body: JSON.stringify({
+                        amount: montant,
+                        payment_method: 'mtn_momo',
+                        description: 'Facture ' + (factureEnCours?.factureId || ''),
+                        return_url: window.location.href
+                    })
                 });
                 const data = await res.json();
-                if (!data.success) throw new Error(data.error?.message||'Erreur');
+                if (!data.success) throw new Error(data.error?.message || 'Erreur');
+
+                const checkoutUrl = data.data?.checkout_url;
                 fermerModal();
-                alert('Paiement enregistré.');
-                setTimeout(()=>location.reload(),1200);
-            } catch(err) { alert('Erreur : '+err.message); }
-            finally {
-                confirmBtn.disabled=false;
-                confirmBtn.innerHTML='<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Confirmer';
+
+                if (checkoutUrl) {
+                    window.location.href = checkoutUrl;
+                } else {
+                    // Sandbox ou pas de checkout_url → succès direct
+                    alert('Paiement enregistré. Votre facture sera mise à jour sous peu.');
+                    setTimeout(() => location.reload(), 1200);
+                }
+            } catch(err) {
+                alert('Erreur : ' + err.message);
+            } finally {
+                confirmBtn.disabled = false;
+                confirmBtn.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Confirmer';
             }
         }
 
