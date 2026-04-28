@@ -509,19 +509,25 @@
                     <label class="paiement-method">
                         <input type="radio" name="methodePaiement" value="orange-money" checked>
                         <div class="paiement-method-content">
-                            <div class="paiement-method-icon paiement-orange">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                                    <rect x="2" y="4" width="20" height="16" rx="2"/>
-                                    <circle cx="12" cy="12" r="4"/>
-                                </svg>
-                            </div>
+                            <div class="paiement-method-icon paiement-orange" style="background:#FF6600;color:#fff;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;">OM</div>
                             <div class="paiement-method-info">
                                 <span class="paiement-method-name">Orange Money</span>
+                                <span class="paiement-method-desc">Scan QR ou lien direct</span>
+                            </div>
+                        </div>
+                    </label>
+
+                    <label class="paiement-method">
+                        <input type="radio" name="methodePaiement" value="wave">
+                        <div class="paiement-method-content">
+                            <div class="paiement-method-icon" style="background:#00B8FA;color:#fff;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:10px;flex-shrink:0;">W</div>
+                            <div class="paiement-method-info">
+                                <span class="paiement-method-name">Wave</span>
                                 <span class="paiement-method-desc">Paiement instantané</span>
                             </div>
                         </div>
                     </label>
-                    
+
                     <label class="paiement-method">
                         <input type="radio" name="methodePaiement" value="mtn-money">
                         <div class="paiement-method-content">
@@ -537,36 +543,16 @@
                             </div>
                         </div>
                     </label>
-                    
-                    <label class="paiement-method">
-                        <input type="radio" name="methodePaiement" value="moov-money">
-                        <div class="paiement-method-content">
-                            <div class="paiement-method-icon paiement-moov">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                                    <rect x="2" y="4" width="20" height="16" rx="2"/>
-                                    <circle cx="12" cy="12" r="4"/>
-                                </svg>
-                            </div>
-                            <div class="paiement-method-info">
-                                <span class="paiement-method-name">Moov Money</span>
-                                <span class="paiement-method-desc">Paiement instantané</span>
-                            </div>
-                        </div>
-                    </label>
-                    
+
                     <label class="paiement-method">
                         <input type="radio" name="methodePaiement" value="virement">
                         <div class="paiement-method-content">
                             <div class="paiement-method-icon paiement-bank">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M3 21h18"/>
-                                    <path d="M3 10h18"/>
+                                    <path d="M3 21h18"/><path d="M3 10h18"/>
                                     <path d="M5 6l7-3 7 3"/>
-                                    <path d="M4 10v11"/>
-                                    <path d="M20 10v11"/>
-                                    <path d="M8 14v3"/>
-                                    <path d="M12 14v3"/>
-                                    <path d="M16 14v3"/>
+                                    <path d="M4 10v11"/><path d="M20 10v11"/>
+                                    <path d="M8 14v3"/><path d="M12 14v3"/><path d="M16 14v3"/>
                                 </svg>
                             </div>
                             <div class="paiement-method-info">
@@ -659,12 +645,13 @@
         }
         
         const API_BASE = 'https://api.jaebets-holding.com';
+        const OM_URL = 'https://multi.app.orange-money.com/app/v1/kapptivate/qrcode/odyssee/?id=codgen51-ff194b337b9443fdbf76085714770a5c&v=1';
+        const WAVE_URL = 'https://pay.wave.com/m/M_ci_qVXNsCLnbm0v/c/ci/';
         let factureEnCours = null;
 
-        // Modal paiement
+        /* ── Ouvrir modal paiement ─────────────────── */
         function ouvrirPaiement(factureId, montant) {
             factureEnCours = { factureId, montant };
-            // Afficher le montant réel dans le modal
             const el = document.querySelector('.paiement-value');
             if (el && montant) el.textContent = new Intl.NumberFormat('fr-FR').format(montant) + ' FCFA';
             document.getElementById('modalPaiement').classList.remove('hidden');
@@ -674,43 +661,44 @@
             document.querySelectorAll('.modal-overlay').forEach(m => m.classList.add('hidden'));
         }
 
-        // Procéder au paiement via VPS
+        /* ── Procéder au paiement ─────────────────── */
         async function procederPaiement() {
             const methode = document.querySelector('input[name="methodePaiement"]:checked').value;
-            const methodMap = { 'orange-money': 'orange_money', 'mtn-money': 'mtn_momo', 'moov-money': 'moov_money', 'virement': 'bank_transfer' };
-            const confirmBtn = document.querySelector('#modalPaiement .btn-primary');
-
-            // Récupérer token depuis navette_session
-            let token = null;
-            try {
-                const session = JSON.parse(localStorage.getItem('navette_session') || '{}');
-                token = session.token || null;
-            } catch(e) {}
-
-            if (!token) { alert('Session expirée. Reconnectez-vous.'); window.location.href = 'connexion.html'; return; }
-
             const montant = factureEnCours?.montant || 0;
             if (!montant) { alert('Montant introuvable.'); return; }
 
+            /* Orange Money ou Wave → lien externe + confirmation */
+            if (methode === 'orange-money' || methode === 'wave') {
+                fermerModal();
+                ouvrirInstructionsMobile(methode, montant);
+                return;
+            }
+
+            /* MTN / Virement → via API */
+            const methodMap = { 'mtn-money': 'mtn_momo', 'virement': 'bank_transfer' };
+            const confirmBtn = document.querySelector('#modalPaiement .btn-primary');
+
+            let token = null;
+            try { token = JSON.parse(localStorage.getItem('navette_session') || '{}').token; } catch(e) {}
+            if (!token) { alert('Session expirée. Reconnectez-vous.'); window.location.href = 'connexion.html'; return; }
+
             confirmBtn.disabled = true;
             confirmBtn.textContent = 'Traitement...';
-
             try {
                 const res = await fetch(API_BASE + '/api/payments/initiate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
                     body: JSON.stringify({
                         amount: montant,
-                        payment_method: methodMap[methode],
-                        description: 'Paiement facture entreprise' + (factureEnCours?.factureId ? ' #' + factureEnCours.factureId : '')
+                        payment_method: methodMap[methode] || 'bank_transfer',
+                        description: 'Paiement facture' + (factureEnCours?.factureId ? ' #' + factureEnCours.factureId : '')
                     })
                 });
                 const data = await res.json();
                 if (!data.success) throw new Error(data.error?.message || 'Erreur paiement');
-
                 fermerModal();
-                W2KApp.Notifications.show('Paiement confirmé ! Votre facture est en cours de traitement.', 'success');
-                setTimeout(() => window.location.reload(), 2000);
+                alert('✅ Paiement enregistré. Votre facture est en cours de traitement.');
+                setTimeout(() => window.location.reload(), 1500);
             } catch(err) {
                 alert('Erreur : ' + err.message);
             } finally {
@@ -719,9 +707,57 @@
             }
         }
 
-        function getMethodeName(methode) {
-            const noms = { 'orange-money': 'Orange Money', 'mtn-money': 'MTN Mobile Money', 'moov-money': 'Moov Money', 'virement': 'Virement bancaire' };
-            return noms[methode] || methode;
+        /* ── Instructions OM / Wave ───────────────── */
+        function ouvrirInstructionsMobile(methode, montant) {
+            const fmt = new Intl.NumberFormat('fr-FR').format(montant);
+            const isOM = methode === 'orange-money';
+            const couleur = isOM ? '#FF6600' : '#00B8FA';
+            const nom = isOM ? 'Orange Money' : 'Wave';
+            const icone = isOM ? 'OM' : 'W';
+            const lien = isOM ? OM_URL : WAVE_URL + '?amount=' + montant;
+            const btnLabel = isOM ? '📱 Ouvrir Orange Money' : '💙 Ouvrir Wave';
+
+            const div = document.createElement('div');
+            div.id = 'instrOverlayEntreprise';
+            div.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:200;display:flex;align-items:flex-end;';
+            div.innerHTML = `
+              <div style="background:#1B2A4A;border-radius:24px 24px 0 0;padding:28px 20px 40px;width:100%;box-sizing:border-box;">
+                <div style="text-align:center;margin-bottom:20px;">
+                  <div style="width:60px;height:60px;border-radius:16px;background:${couleur};color:#fff;font-weight:700;font-size:22px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">${icone}</div>
+                  <h3 style="color:#fff;margin:0 0 6px;font-size:18px;">Paiement ${nom}</h3>
+                  <p style="color:rgba(255,255,255,0.5);font-size:13px;margin:0;">Suivez les étapes ci-dessous</p>
+                </div>
+                <div style="background:rgba(200,169,81,0.12);border:1px solid rgba(200,169,81,0.3);border-radius:12px;padding:16px;margin-bottom:20px;text-align:center;">
+                  <p style="color:rgba(255,255,255,0.6);font-size:12px;margin:0 0 4px;">Montant à régler</p>
+                  <p style="color:#C9A84C;font-size:28px;font-weight:700;margin:0;">${fmt} FCFA</p>
+                </div>
+                <div style="background:rgba(255,255,255,0.04);border-radius:12px;padding:14px;margin-bottom:20px;">
+                  <ol style="color:rgba(255,255,255,0.7);font-size:13px;margin:0;padding-left:18px;line-height:1.9;">
+                    <li>Appuyez sur le bouton ci-dessous pour ouvrir ${nom}</li>
+                    <li>Entrez le montant <strong style="color:#C9A84C">${fmt} FCFA</strong></li>
+                    <li>Validez avec votre code secret ${nom}</li>
+                    <li>Revenez ici et confirmez votre paiement</li>
+                  </ol>
+                </div>
+                <a href="${lien}" target="_blank" rel="noopener"
+                  style="display:block;text-align:center;padding:15px;border-radius:12px;font-weight:700;font-size:16px;text-decoration:none;background:${couleur};color:#fff;margin-bottom:12px;">
+                  ${btnLabel}
+                </a>
+                <button onclick="confirmerPaiementEntreprise()"
+                  style="width:100%;padding:15px;background:#2EC4B6;border:none;border-radius:12px;color:#0F1A2E;font-weight:700;font-size:16px;cursor:pointer;font-family:inherit;margin-bottom:8px;">
+                  ✅ J'ai effectué le paiement
+                </button>
+                <button onclick="document.getElementById('instrOverlayEntreprise').remove()"
+                  style="width:100%;padding:12px;background:transparent;border:none;color:rgba(255,255,255,0.4);font-size:14px;cursor:pointer;font-family:inherit;">
+                  Annuler
+                </button>
+              </div>`;
+            document.body.appendChild(div);
+        }
+
+        function confirmerPaiementEntreprise() {
+            document.getElementById('instrOverlayEntreprise')?.remove();
+            alert('✅ Paiement enregistré ! Notre équipe va confirmer votre règlement sous 24h.\n\nEn cas de question : WhatsApp +225 07 03 28 53 59');
         }
         
         // Télécharger facture PDF
