@@ -584,58 +584,61 @@
     <script src="auth-api.js"></script>
   <script src="js/app.js"></script>
     <script>
-        // Initialisation Dashboard
-        document.addEventListener('DOMContentLoaded', function() {
-            // Vérifier authentification
-            const entrepriseData = W2KApp.Utils.storage.get('entreprise');
-            
-            if (!entrepriseData) {
-                // Rediriger vers connexion si pas authentifié
-                window.location.href = 'connexion.html';
-                return;
-            }
-            
-            // Afficher nom entreprise
-            const nomElement = document.getElementById('entrepriseNom');
-            if (nomElement && entrepriseData.nom) {
-                nomElement.textContent = entrepriseData.nom;
-            }
-            
-            // Initialiser navigation
-            W2KApp.Navigation.init();
-            
-            // Charger données dashboard (mode démo)
-            chargerDashboard();
-            
-            // Bouton déconnexion
-            const btnLogout = document.getElementById('btnLogout');
-            if (btnLogout) {
-                btnLogout.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    W2KApp.Auth.logout();
-                });
-            }
+        const API_BASE = 'https://api.jaebets-holding.com';
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            const user = NavetteAuth.getUser();
+            if (!user) { window.location.href = 'connexion.html'; return; }
+
+            // Nom entreprise
+            const nomEl = document.getElementById('entrepriseNom');
+            if (nomEl) nomEl.textContent = user.company_name || user.full_name || 'Mon Entreprise';
+
+            // Navigation
+            if (window.W2KApp?.Navigation) W2KApp.Navigation.init();
+
+            // Déconnexion
+            document.getElementById('btnLogout')?.addEventListener('click', function(e) {
+                e.preventDefault();
+                NavetteAuth.logout();
+            });
+
+            // Charger KPIs
+            await chargerDashboard(user);
         });
-        
-        // Charger données dashboard
-        async function chargerDashboard() {
+
+        async function chargerDashboard(user) {
+            const companyId = user.company_id;
+            if (!companyId) return;
+
             try {
-                // Mode démo - données statiques
-                // En production, appeler SupabaseAPI.getCorridors(), etc.
-                
-                const demoData = {
-                    corridors: 3,
-                    employes: 127,
-                    depenses: 750000
-                };
-                
-                // Mettre à jour KPIs
-                document.getElementById('kpiCorridors').textContent = demoData.corridors;
-                document.getElementById('kpiEmployes').textContent = demoData.employes;
-                document.getElementById('kpiDepenses').textContent = W2KApp.Utils.formatFCFA(demoData.depenses).replace(' FCFA', '');
-                
-            } catch (error) {
-                console.error('Erreur chargement dashboard:', error);
+                // Corridors (abonnements actifs)
+                const subsData = await NavetteAuth.apiFetch('/api/subscriptions?company_id=' + companyId + '&status=active&limit=1');
+                if (subsData?.data) {
+                    // Count unique corridors/lines
+                    const corridors = new Set(subsData.data.map(s => s.line_id)).size;
+                    document.getElementById('kpiCorridors').textContent = corridors || subsData.data.length;
+                }
+
+                // Employés
+                const empData = await NavetteAuth.apiFetch('/api/companies/' + companyId + '/employees?limit=1');
+                if (empData?.data) {
+                    const total = empData.total || empData.count || empData.data.length;
+                    document.getElementById('kpiEmployes').textContent = total;
+                }
+
+                // Dépenses (factures du mois)
+                const now = new Date();
+                const month = (now.getMonth() + 1).toString().padStart(2, '0');
+                const year = now.getFullYear();
+                const invData = await NavetteAuth.apiFetch('/api/companies/' + companyId + '/invoices?month=' + year + '-' + month);
+                if (invData?.data && invData.data.length > 0) {
+                    const total = invData.data.reduce((s, inv) => s + (inv.amount || inv.total_amount || 0), 0);
+                    const formatted = total.toLocaleString('fr-FR');
+                    document.getElementById('kpiDepenses').textContent = formatted;
+                }
+            } catch(e) {
+                console.error('[Dashboard] Erreur chargement KPIs:', e.message);
             }
         }
     </script>

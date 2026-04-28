@@ -241,119 +241,95 @@
     <script src="auth-api.js"></script>
   <script src="js/app.js"></script>
     <script>
-        // Données des notifications
-        let notifications = [
-            { id: 1, lue: false, importante: true },
-            { id: 2, lue: false, importante: false },
-            { id: 3, lue: false, importante: false },
-            { id: 4, lue: true, importante: false },
-            { id: 5, lue: true, importante: false },
-            { id: 6, lue: true, importante: false },
-            { id: 7, lue: true, importante: false }
-        ];
-        
-        // Initialisation
-        document.addEventListener('DOMContentLoaded', function() {
-            // Vérifier authentification
-            const entrepriseData = W2KApp.Utils.storage.get('entreprise');
-            if (!entrepriseData) {
-                window.location.href = 'connexion.html';
+        let allNotifs = [];
+
+        function timeAgo(dateStr) {
+            if (!dateStr) return '';
+            const d = new Date(dateStr);
+            const diff = Math.floor((Date.now() - d) / 1000);
+            if (diff < 3600) return 'Il y a ' + Math.floor(diff/60) + ' min';
+            if (diff < 86400) return 'Il y a ' + Math.floor(diff/3600) + 'h';
+            if (diff < 172800) return 'Hier';
+            return d.toLocaleDateString('fr-FR');
+        }
+
+        function renderNotifs(notifs) {
+            const liste = document.getElementById('notificationsList');
+            const emptyState = document.getElementById('notificationsEmpty');
+            const nonLues = notifs.filter(n => !n.is_read && !n.lue).length;
+            document.getElementById('countToutes').textContent = notifs.length;
+            document.getElementById('countNonLues').textContent = nonLues;
+            if (nonLues === 0) document.getElementById('btnMarquerLues').style.display = 'none';
+            if (notifs.length === 0) {
+                liste.innerHTML = '';
+                emptyState?.classList.remove('hidden');
                 return;
             }
-            
-            mettreAJourCompteurs();
+            emptyState?.classList.add('hidden');
+            liste.innerHTML = '<div class="notifications-group">' + notifs.map(n => {
+                const isRead = n.is_read || n.lue;
+                const title = n.title || n.titre || 'Notification';
+                const body = n.body || n.message || n.content || '';
+                const time = timeAgo(n.created_at || n.date_creation);
+                return `
+                <article class="notification-card ${isRead ? '' : 'non-lue'}" data-id="${n.id}" onclick="ouvrirNotification('${n.id}', '')">
+                    ${!isRead ? '<div class="notification-indicator"></div>' : ''}
+                    <div class="notification-icon notification-icon-info">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                        </svg>
+                    </div>
+                    <div class="notification-content">
+                        <h4 class="notification-title">${title}</h4>
+                        <p class="notification-message">${body}</p>
+                        <span class="notification-time">${time}</span>
+                    </div>
+                    <button type="button" class="notification-action">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    </button>
+                </article>`;
+            }).join('') + '</div>';
+        }
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            const user = NavetteAuth.getUser();
+            if (!user) { window.location.href = 'connexion.html'; return; }
+
+            try {
+                const data = await NavetteAuth.apiFetch('/api/notifications?limit=50');
+                allNotifs = data?.data || [];
+                renderNotifs(allNotifs);
+            } catch(e) {
+                document.getElementById('notificationsList').innerHTML = '<div style="padding:32px;text-align:center;color:#888;">Aucune notification.</div>';
+            }
         });
-        
-        // Mettre à jour les compteurs
-        function mettreAJourCompteurs() {
-            const nonLues = notifications.filter(n => !n.lue).length;
-            const toutes = notifications.length;
-            
-            document.getElementById('countToutes').textContent = toutes;
-            document.getElementById('countNonLues').textContent = nonLues;
-            
-            // Masquer bouton si toutes lues
-            if (nonLues === 0) {
-                document.getElementById('btnMarquerLues').style.display = 'none';
-            }
-        }
-        
-        // Filtrer notifications
+
         function filtrerNotifications(filtre) {
-            // Mettre à jour boutons
-            document.querySelectorAll('.notif-filter').forEach(btn => {
-                btn.classList.remove('active');
-            });
+            document.querySelectorAll('.notif-filter').forEach(btn => btn.classList.remove('active'));
             document.querySelector(`[data-filter="${filtre}"]`).classList.add('active');
-            
-            // Filtrer cartes
-            const cartes = document.querySelectorAll('.notification-card');
-            let visibles = 0;
-            
-            cartes.forEach(carte => {
-                let visible = true;
-                
-                if (filtre === 'non-lues' && !carte.classList.contains('non-lue')) {
-                    visible = false;
-                }
-                if (filtre === 'importantes' && !carte.classList.contains('importante')) {
-                    visible = false;
-                }
-                
-                carte.style.display = visible ? 'flex' : 'none';
-                if (visible) visibles++;
-            });
-            
-            // Afficher/masquer les groupes vides
-            document.querySelectorAll('.notifications-group').forEach(groupe => {
-                const cartesVisibles = groupe.querySelectorAll('.notification-card[style*="flex"], .notification-card:not([style*="none"])');
-                groupe.style.display = cartesVisibles.length > 0 ? 'block' : 'none';
-            });
-            
-            // État vide
-            const emptyState = document.getElementById('notificationsEmpty');
-            const liste = document.getElementById('notificationsList');
-            
-            if (visibles === 0) {
-                emptyState.classList.remove('hidden');
-                liste.style.display = 'none';
-            } else {
-                emptyState.classList.add('hidden');
-                liste.style.display = 'block';
-            }
+            let filtered = allNotifs;
+            if (filtre === 'non-lues') filtered = allNotifs.filter(n => !n.is_read && !n.lue);
+            else if (filtre === 'importantes') filtered = allNotifs.filter(n => n.important || n.importante);
+            renderNotifs(filtered);
         }
-        
-        // Ouvrir notification
-        function ouvrirNotification(id, url) {
-            // Marquer comme lue
-            const carte = document.querySelector(`[data-id="${id}"]`);
-            carte.classList.remove('non-lue');
-            
-            // Mettre à jour données
-            const notif = notifications.find(n => n.id === id);
-            if (notif) notif.lue = true;
-            
-            mettreAJourCompteurs();
-            
-            // Naviguer
-            if (url) {
-                window.location.href = url;
+
+        async function ouvrirNotification(id, url) {
+            const n = allNotifs.find(x => String(x.id) === String(id));
+            if (n && !n.is_read) {
+                n.is_read = true;
+                await NavetteAuth.apiFetch('/api/notifications/' + id + '/read', { method: 'PUT' }).catch(() => {});
             }
+            if (url) window.location.href = url;
         }
-        
-        // Marquer toutes comme lues
-        function marquerToutesLues() {
-            const cartes = document.querySelectorAll('.notification-card.non-lue');
-            cartes.forEach(carte => {
-                carte.classList.remove('non-lue');
-            });
-            
-            // Mettre à jour données
-            notifications.forEach(n => n.lue = true);
-            
-            mettreAJourCompteurs();
-            
-            W2KApp.Notifications.show('Toutes les notifications ont été marquées comme lues', 'success');
+
+        async function marquerToutesLues() {
+            const unread = allNotifs.filter(n => !n.is_read && !n.lue);
+            for (const n of unread) {
+                n.is_read = true;
+                await NavetteAuth.apiFetch('/api/notifications/' + n.id + '/read', { method: 'PUT' }).catch(() => {});
+            }
+            renderNotifs(allNotifs);
         }
     </script>
 </body>

@@ -526,145 +526,154 @@
     
     
     <script src="auth-api.js"></script>
-  <script src="js/app.js"></script>
+    <script src="js/app.js"></script>
     <script>
         // Initialisation
-        document.addEventListener('DOMContentLoaded', function() {
-            // Vérifier authentification
-            const entrepriseData = W2KApp.Utils.storage.get('entreprise');
-            if (!entrepriseData) {
+        document.addEventListener('DOMContentLoaded', async function() {
+            const user = NavetteAuth.getUser();
+            if (!user) {
                 window.location.href = 'connexion.html';
                 return;
             }
-            
-            // Initialiser navigation
-            W2KApp.Navigation.init();
-            
-            // Charger données profil
-            chargerProfil(entrepriseData);
-            
+
             // Déconnexion sidebar
             document.getElementById('btnLogout')?.addEventListener('click', function(e) {
                 e.preventDefault();
                 confirmerDeconnexion();
             });
+
+            // Remplir depuis localStorage immédiatement
+            remplirProfil(user, null);
+
+            // Charger données complètes depuis API
+            try {
+                const companyId = user.company_id;
+                const [companyData, subsData, empData] = await Promise.all([
+                    NavetteAuth.apiFetch('/api/companies/' + companyId),
+                    NavetteAuth.apiFetch('/api/subscriptions?company_id=' + companyId + '&status=active'),
+                    NavetteAuth.apiFetch('/api/companies/' + companyId + '/employees')
+                ]);
+                remplirProfil(user, companyData?.data || null);
+
+                // Stats
+                const nbCorridors = subsData?.data?.length || 0;
+                const nbEmployes = empData?.data?.length || 0;
+                document.getElementById('statCorridors').textContent = nbCorridors;
+                document.getElementById('statEmployes').textContent = nbEmployes;
+                document.getElementById('statTrajets').textContent = '—';
+            } catch(err) {
+                console.error('Erreur chargement profil:', err);
+            }
         });
-        
-        // Charger profil
-        function chargerProfil(entreprise) {
-            // Avatar initiales
-            const nom = entreprise.nom || 'Entreprise Demo';
+
+        function remplirProfil(user, company) {
+            const nom = (company?.company_name || user.company_name || user.full_name || 'Entreprise');
             const initiales = nom.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
             document.getElementById('profilAvatar').querySelector('span').textContent = initiales;
-            
-            // Infos principales
             document.getElementById('profilNom').textContent = nom;
-            document.getElementById('profilId').textContent = 'ID: ' + (entreprise.id || 'ENT-2026-0042');
-            
-            // Stats
-            document.getElementById('statCorridors').textContent = entreprise.corridors || '3';
-            document.getElementById('statEmployes').textContent = entreprise.employes || '49';
-            document.getElementById('statTrajets').textContent = entreprise.trajets || '1 254';
-            
+            document.getElementById('profilId').textContent = 'ID: ' + (user.company_id || '—');
+
+            // Date membre
+            if (company?.created_at) {
+                const d = new Date(company.created_at);
+                document.getElementById('profilMembre').textContent = 'Membre depuis ' + d.toLocaleDateString('fr-FR', {month: 'long', year: 'numeric'});
+            }
+
             // Champs entreprise
-            document.getElementById('fieldRaisonSociale').textContent = entreprise.raisonSociale || nom + ' SARL';
-            document.getElementById('fieldSecteur').textContent = entreprise.secteur || 'Technologies / Services';
-            document.getElementById('fieldRCCM').textContent = entreprise.rccm || 'CI-ABJ-2025-B-12345';
-            document.getElementById('fieldAdresse').textContent = entreprise.adresse || 'Plateau, Rue des Jardins, Abidjan';
-            
+            document.getElementById('fieldRaisonSociale').textContent = company?.company_name || nom;
+            document.getElementById('fieldSecteur').textContent = company?.sector || '—';
+            document.getElementById('fieldRCCM').textContent = company?.rccm || '—';
+            document.getElementById('fieldAdresse').textContent = company?.address || '—';
+
             // Contact
-            document.getElementById('fieldResponsable').textContent = entreprise.responsable || 'Mme Kouassi Marie';
-            document.getElementById('fieldTelephone').textContent = entreprise.telephone || '+225 07 00 00 00 00';
-            document.getElementById('fieldEmail').textContent = entreprise.email || 'rh@entreprise-demo.ci';
+            document.getElementById('fieldResponsable').textContent = user.full_name || '—';
+            document.getElementById('fieldTelephone').textContent = company?.phone || user.phone || '—';
+            document.getElementById('fieldEmail').textContent = user.email || '—';
         }
-        
+
         // Changer logo
         function changerLogo() {
-            W2KApp.Notifications.show('Fonctionnalité disponible prochainement', 'info');
+            alert('Fonctionnalité disponible prochainement');
         }
-        
+
         // Modifier entreprise
         function modifierEntreprise() {
-            W2KApp.Notifications.show('Contactez le support pour modifier vos informations', 'info');
+            alert('Contactez le support pour modifier vos informations');
         }
-        
+
         // Modifier contact
         function modifierContact() {
-            W2KApp.Notifications.show('Contactez le support pour modifier vos coordonnées', 'info');
+            alert('Contactez le support pour modifier vos coordonnées');
         }
-        
+
         // Changer mot de passe
         function changerMotDePasse() {
             document.getElementById('modalMotDePasse').classList.remove('hidden');
         }
-        
-        function sauvegarderMotDePasse(e) {
+
+        async function sauvegarderMotDePasse(e) {
             e.preventDefault();
-            
+
             const actuel = document.getElementById('mdpActuel').value;
             const nouveau = document.getElementById('mdpNouveau').value;
             const confirm = document.getElementById('mdpConfirm').value;
-            
+
             if (nouveau !== confirm) {
-                W2KApp.Notifications.show('Les mots de passe ne correspondent pas', 'error');
+                alert('Les mots de passe ne correspondent pas');
                 return;
             }
-            
+
             if (nouveau.length < 8) {
-                W2KApp.Notifications.show('Le mot de passe doit contenir au moins 8 caractères', 'error');
+                alert('Le mot de passe doit contenir au moins 8 caractères');
                 return;
             }
-            
-            // Simuler sauvegarde
-            W2KApp.Notifications.show('Mot de passe modifié avec succès', 'success');
-            fermerModal();
-            document.getElementById('formMotDePasse').reset();
+
+            try {
+                await NavetteAuth.apiFetch('/api/auth/change-password', {
+                    method: 'POST',
+                    body: JSON.stringify({ current_password: actuel, new_password: nouveau })
+                });
+                alert('Mot de passe modifié avec succès');
+                fermerModal();
+                document.getElementById('formMotDePasse').reset();
+            } catch(err) {
+                alert('Erreur : ' + (err.message || 'Impossible de modifier le mot de passe'));
+            }
         }
-        
+
         // Double authentification
         function toggleDoubleAuth() {
             const toggle = document.getElementById('toggleDoubleAuth');
             toggle.classList.toggle('active');
-            
-            if (toggle.classList.contains('active')) {
-                W2KApp.Notifications.show('Authentification à deux facteurs activée', 'success');
-            } else {
-                W2KApp.Notifications.show('Authentification à deux facteurs désactivée', 'info');
-            }
         }
-        
+
         // Notifications
         function toggleNotification(type) {
             const toggleId = 'toggle' + type.charAt(0).toUpperCase() + type.slice(1);
             const toggle = document.getElementById(toggleId);
             toggle.classList.toggle('active');
-            
-            const action = toggle.classList.contains('active') ? 'activées' : 'désactivées';
-            W2KApp.Notifications.show('Notifications ' + type.toUpperCase() + ' ' + action, 'info');
         }
-        
+
         // Déconnexion
         function confirmerDeconnexion() {
             document.getElementById('modalDeconnexion').classList.remove('hidden');
         }
-        
+
         function deconnecter() {
-            W2KApp.Auth.logout();
+            NavetteAuth.logout();
         }
-        
+
         // Fermer modal
         function fermerModal() {
             document.querySelectorAll('.modal-overlay').forEach(m => {
                 m.classList.add('hidden');
             });
         }
-        
+
         // Fermer modal au clic extérieur
         document.querySelectorAll('.modal-overlay').forEach(overlay => {
             overlay.addEventListener('click', function(e) {
-                if (e.target === this) {
-                    fermerModal();
-                }
+                if (e.target === this) fermerModal();
             });
         });
     </script>

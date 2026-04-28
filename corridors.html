@@ -634,28 +634,74 @@
   <script src="js/app.js"></script>
     <script>
         // Initialisation page corridors
-        document.addEventListener('DOMContentLoaded', function() {
-            // Vérifier authentification
-            const entrepriseData = W2KApp.Utils.storage.get('entreprise');
-            if (!entrepriseData) {
-                window.location.href = 'connexion.html';
-                return;
-            }
-            
-            // Initialiser navigation
-            W2KApp.Navigation.init();
-            
-            // Initialiser filtres
+        document.addEventListener('DOMContentLoaded', async function() {
+            const user = NavetteAuth.getUser();
+            if (!user) { window.location.href = 'connexion.html'; return; }
+
+            if (window.W2KApp?.Navigation) W2KApp.Navigation.init();
             initFiltres();
-            
-            // Initialiser recherche
             initRecherche();
-            
-            // Déconnexion
+
             document.getElementById('btnLogout')?.addEventListener('click', function(e) {
                 e.preventDefault();
-                W2KApp.Auth.logout();
+                NavetteAuth.logout();
             });
+
+            // Charger corridors réels depuis les abonnements actifs
+            const companyId = user.company_id;
+            if (companyId) {
+                try {
+                    const data = await NavetteAuth.apiFetch('/api/subscriptions?company_id=' + companyId + '&status=active');
+                    const list = data?.data || [];
+                    if (list.length > 0) {
+                        const corridorsList = document.getElementById('corridorsList');
+                        document.getElementById('countAll').textContent = list.length;
+                        document.getElementById('countActifs').textContent = list.length;
+                        document.getElementById('countInactifs').textContent = 0;
+
+                        corridorsList.innerHTML = list.map((sub, i) => {
+                            const line = sub.line || sub.corridor || {};
+                            const origin = line.origin || line.departure || 'Départ';
+                            const dest = line.destination || line.arrival || 'Destination';
+                            const nom = line.name || origin + ' → ' + dest;
+                            const heureAller = line.departure_time || '–';
+                            const heureRetour = line.return_time || '–';
+                            const nbEmployes = sub.employee_count || sub.seats || '–';
+                            const bus = sub.vehicle?.plate_number || '–';
+                            const prix = sub.monthly_price || sub.amount || 0;
+                            return `
+                            <article class="corridor-card-full" data-status="actif" data-id="${sub.id || i}">
+                                <div class="corridor-card-header">
+                                    <div class="corridor-status-badge status-actif">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                        Actif
+                                    </div>
+                                </div>
+                                <div class="corridor-route-full">
+                                    <div class="route-point route-start">
+                                        <div class="route-marker"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="6"/></svg></div>
+                                        <div class="route-info"><span class="route-label">Zone départ</span><span class="route-value">${origin}</span></div>
+                                    </div>
+                                    <div class="route-connector"><div class="route-line"></div><div class="route-line"></div></div>
+                                    <div class="route-point route-end">
+                                        <div class="route-marker"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+                                        <div class="route-info"><span class="route-label">Destination</span><span class="route-value">${dest}</span></div>
+                                    </div>
+                                </div>
+                                <div class="corridor-details">
+                                    <div class="corridor-detail"><span><strong>${nbEmployes}</strong> employés</span></div>
+                                    <div class="corridor-detail"><span>Bus <strong>${bus}</strong></span></div>
+                                    <div class="corridor-detail"><span>Aller <strong>${heureAller}</strong> / Retour <strong>${heureRetour}</strong></span></div>
+                                    ${prix ? '<div class="corridor-detail corridor-detail-cost"><span><strong>' + prix.toLocaleString('fr-FR') + ' FCFA</strong>/mois</span></div>' : ''}
+                                </div>
+                                <div class="corridor-card-footer">
+                                    <a href="employes.html?corridor=${sub.line_id || ''}" class="btn btn-outline btn-sm">Voir employés</a>
+                                </div>
+                            </article>`;
+                        }).join('');
+                    }
+                } catch(e) { console.error('[Corridors] Erreur:', e.message); }
+            }
         });
         
         // Filtres corridors

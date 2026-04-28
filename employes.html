@@ -715,40 +715,73 @@
         let employeIdCourant = null;
         
         // Initialisation
-        document.addEventListener('DOMContentLoaded', function() {
-            // Vérifier authentification
-            const entrepriseData = W2KApp.Utils.storage.get('entreprise');
-            if (!entrepriseData) {
-                window.location.href = 'connexion.html';
-                return;
-            }
-            
-            // Initialiser navigation
-            W2KApp.Navigation.init();
-            
-            // Initialiser recherche
+        document.addEventListener('DOMContentLoaded', async function() {
+            const user = NavetteAuth.getUser();
+            if (!user) { window.location.href = 'connexion.html'; return; }
+
+            if (window.W2KApp?.Navigation) W2KApp.Navigation.init();
+
             initRecherche();
-            
-            // Initialiser filtres
             initFiltres();
-            
-            // Formulaire ajout
+
             document.getElementById('formAjoutEmploye').addEventListener('submit', ajouterEmploye);
-            
-            // Déconnexion
+
             document.getElementById('btnLogout')?.addEventListener('click', function(e) {
                 e.preventDefault();
-                W2KApp.Auth.logout();
+                NavetteAuth.logout();
             });
-            
-            // Vérifier paramètres URL
+
             const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('action') === 'add') {
-                ouvrirModalAjout();
-            }
+            if (urlParams.get('action') === 'add') ouvrirModalAjout();
             if (urlParams.get('corridor')) {
                 document.getElementById('filterCorridor').value = urlParams.get('corridor');
                 filtrerEmployes();
+            }
+
+            // Charger employés réels
+            const companyId = user.company_id;
+            if (companyId) {
+                try {
+                    const data = await NavetteAuth.apiFetch('/api/companies/' + companyId + '/employees');
+                    const list = data?.data || [];
+                    if (list.length > 0) {
+                        const total = data.total || list.length;
+                        const assigned = list.filter(e => e.status === 'active' || e.corridor_id).length;
+                        document.getElementById('statTotal').textContent = total;
+                        document.getElementById('statAssignes').textContent = assigned;
+                        document.getElementById('statEnAttente').textContent = total - assigned;
+                        document.querySelector('.page-subtitle') && (document.querySelector('.page-subtitle').textContent = total + ' employés inscrits au transport');
+
+                        const employesList = document.getElementById('employesList');
+                        employesList.innerHTML = list.map(e => {
+                            const nom = e.user?.full_name || e.full_name || e.name || 'Employé';
+                            const initiales = nom.split(' ').map(p => p[0]).join('').substring(0, 2).toUpperCase();
+                            const mat = e.employee_id || e.matricule || 'N/A';
+                            const statut = (e.corridor_id || e.status === 'active') ? 'assigne' : 'en-attente';
+                            const corridorNom = e.corridor?.name || e.line?.name || '';
+                            return `
+                            <article class="employe-card" data-id="${e.id}" data-status="${statut}" data-corridor="${e.corridor_id || ''}">
+                                <div class="employe-avatar"><span>${initiales}</span></div>
+                                <div class="employe-info">
+                                    <h3 class="employe-name">${nom}</h3>
+                                    <span class="employe-matricule">${mat}</span>
+                                    ${corridorNom ? `<div class="employe-meta"><span class="employe-corridor">${corridorNom}</span></div>` : ''}
+                                </div>
+                                <div class="employe-status">
+                                    <span class="status-badge status-${statut}">${statut === 'assigne' ? 'Assigné' : 'En attente'}</span>
+                                </div>
+                                <div class="employe-actions">
+                                    <button class="employe-action-btn employe-action-danger" title="Supprimer" onclick="supprimerEmploye('${e.id}')">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polyline points="3 6 5 6 21 6"/>
+                                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </article>`;
+                        }).join('');
+                    }
+                } catch(e) { console.error('[Employés] Erreur:', e.message); }
             }
         });
         
@@ -813,20 +846,29 @@
             employeIdCourant = null;
         }
         
-        function ajouterEmploye(e) {
+        async function ajouterEmploye(e) {
             e.preventDefault();
-            
             const formData = new FormData(e.target);
             const data = Object.fromEntries(formData);
-            
-            // Simuler ajout (mode démo)
-            console.log('Ajout employé:', data);
-            
-            W2KApp.Notifications.show('Employé ajouté avec succès', 'success');
-            fermerModal();
-            e.target.reset();
-            
-            // En production: SupabaseAPI.addEmploye(data)
+            const user = NavetteAuth.getUser();
+            const companyId = user?.company_id;
+            if (!companyId) return;
+            try {
+                const res = await NavetteAuth.apiFetch('/api/companies/' + companyId + '/employees', {
+                    method: 'POST',
+                    body: JSON.stringify({ full_name: data.nom, employee_id: data.matricule, phone: data.telephone, email: data.email, zone: data.zone, corridor_id: data.corridor || null })
+                });
+                if (res?.success) {
+                    if (window.W2KApp?.Notifications) W2KApp.Notifications.show('Employé ajouté avec succès', 'success');
+                    fermerModal();
+                    e.target.reset();
+                    window.location.reload();
+                } else {
+                    alert(res?.error?.message || 'Erreur lors de l\'ajout');
+                }
+            } catch(err) {
+                alert('Impossible de contacter le serveur');
+            }
         }
         
         // Actions employés
@@ -841,18 +883,17 @@
             document.getElementById('modalSupprimer').classList.remove('hidden');
         }
         
-        function confirmerSuppression() {
+        async function confirmerSuppression() {
             if (employeIdCourant) {
-                // Simuler suppression
+                const user = NavetteAuth.getUser();
+                const companyId = user?.company_id;
+                try {
+                    await NavetteAuth.apiFetch('/api/companies/' + companyId + '/employees/' + employeIdCourant, { method: 'DELETE' });
+                } catch(e) {}
                 const card = document.querySelector(`[data-id="${employeIdCourant}"]`);
-                if (card) {
-                    card.remove();
-                }
-                
-                W2KApp.Notifications.show('Employé supprimé', 'success');
+                if (card) card.remove();
+                if (window.W2KApp?.Notifications) W2KApp.Notifications.show('Employé supprimé', 'success');
                 fermerModal();
-                
-                // En production: SupabaseAPI.deleteEmploye(employeIdCourant)
             }
         }
         

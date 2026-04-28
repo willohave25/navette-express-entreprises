@@ -374,132 +374,92 @@
     <script>
         // Variables
         let factureData = null;
-        
-        // Données de démonstration
-        const facturesDemo = {
-            '1': {
-                numero: 'FAC-2026-003',
-                periode: 'Mars 2026',
-                dateEmission: '01/03/2026',
-                dateEcheance: '05/04/2026',
-                statut: 'en-attente',
-                montant: 850000,
-                lignes: [
-                    { titre: 'Corridor Cocody → Plateau', detail: '22 employés × 22 jours ouvrés', qte: 484, pu: 750, total: 363000 },
-                    { titre: 'Corridor Yopougon → Vridi', detail: '15 employés × 22 jours ouvrés', qte: 330, pu: 850, total: 280500 },
-                    { titre: 'Corridor Marcory → Plateau', detail: '12 employés × 22 jours ouvrés', qte: 264, pu: 650, total: 171600 },
-                    { titre: 'Service VIP (climatisation)', detail: 'Option premium corridor Cocody', qte: 1, pu: 34900, total: 34900 }
-                ]
-            },
-            '2': {
-                numero: 'FAC-2026-002',
-                periode: 'Février 2026',
-                dateEmission: '01/02/2026',
-                dateEcheance: '05/03/2026',
-                datePaiement: '02/03/2026 à 14:32',
-                methodePaiement: 'Orange Money',
-                statut: 'payee',
-                montant: 820000,
-                lignes: [
-                    { titre: 'Corridor Cocody → Plateau', detail: '22 employés × 20 jours ouvrés', qte: 440, pu: 750, total: 330000 },
-                    { titre: 'Corridor Yopougon → Vridi', detail: '15 employés × 20 jours ouvrés', qte: 300, pu: 850, total: 255000 },
-                    { titre: 'Corridor Marcory → Plateau', detail: '12 employés × 20 jours ouvrés', qte: 240, pu: 650, total: 156000 },
-                    { titre: 'Service VIP (climatisation)', detail: 'Option premium corridor Cocody', qte: 1, pu: 34900, total: 34900 },
-                    { titre: 'Frais administratifs', detail: 'Gestion mensuelle', qte: 1, pu: 44100, total: 44100 }
-                ]
-            },
-            '3': {
-                numero: 'FAC-2026-001',
-                periode: 'Janvier 2026',
-                dateEmission: '01/01/2026',
-                dateEcheance: '05/02/2026',
-                datePaiement: '03/02/2026 à 09:15',
-                methodePaiement: 'Virement bancaire',
-                statut: 'payee',
-                montant: 780000,
-                lignes: [
-                    { titre: 'Corridor Cocody → Plateau', detail: '20 employés × 21 jours ouvrés', qte: 420, pu: 750, total: 315000 },
-                    { titre: 'Corridor Yopougon → Vridi', detail: '15 employés × 21 jours ouvrés', qte: 315, pu: 850, total: 267750 },
-                    { titre: 'Corridor Marcory → Plateau', detail: '10 employés × 21 jours ouvrés', qte: 210, pu: 650, total: 136500 },
-                    { titre: 'Frais de mise en place', detail: 'Installation corridors', qte: 1, pu: 60750, total: 60750 }
-                ]
-            }
-        };
-        
+
         // Initialisation
-        document.addEventListener('DOMContentLoaded', function() {
-            // Vérifier authentification
-            const entrepriseData = W2KApp.Utils.storage.get('entreprise');
-            if (!entrepriseData) {
-                window.location.href = 'connexion.html';
+        document.addEventListener('DOMContentLoaded', async function() {
+            const user = NavetteAuth.getUser();
+            if (!user) { window.location.href = 'connexion.html'; return; }
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const factureId = urlParams.get('id');
+            const companyId = user.company_id;
+
+            // Pré-remplir infos client
+            document.getElementById('clientNom').textContent = user.company_name || user.full_name || 'Mon Entreprise';
+            document.getElementById('clientEmail').textContent = user.email || '';
+
+            if (!factureId || !companyId) {
+                document.getElementById('factureNumero').textContent = 'Facture introuvable';
                 return;
             }
-            
-            // Récupérer ID facture depuis URL
-            const urlParams = new URLSearchParams(window.location.search);
-            const factureId = urlParams.get('id') || '1';
-            
-            // Charger données facture
-            chargerFacture(factureId, entrepriseData);
+
+            await chargerFacture(factureId, companyId, user);
         });
-        
-        // Charger facture
-        function chargerFacture(id, entreprise) {
-            factureData = facturesDemo[id] || facturesDemo['1'];
-            
-            // Mettre à jour en-tête
-            document.getElementById('factureNumero').textContent = factureData.numero;
-            document.getElementById('datePeriode').textContent = factureData.periode;
-            document.getElementById('dateEmission').textContent = factureData.dateEmission;
-            document.getElementById('dateEcheance').textContent = factureData.dateEcheance;
-            
-            // Statut
-            const statutBadge = document.getElementById('factureStatut');
-            if (factureData.statut === 'payee') {
-                statutBadge.innerHTML = '<span class="status-badge status-assigne">Payée</span>';
-                document.getElementById('btnPayer').style.display = 'none';
-                
-                // Afficher historique
-                document.getElementById('historiqueSection').classList.remove('hidden');
-                document.getElementById('paiementDate').textContent = factureData.datePaiement;
-                document.getElementById('paiementMethode').textContent = factureData.methodePaiement;
-            } else {
-                statutBadge.innerHTML = '<span class="status-badge status-en-attente">En attente</span>';
+
+        async function chargerFacture(factureId, companyId, user) {
+            try {
+                const data = await NavetteAuth.apiFetch('/api/companies/' + companyId + '/invoices/' + factureId);
+                if (!data?.success || !data.data) throw new Error('Facture non trouvée');
+
+                const f = data.data;
+                factureData = f;
+
+                document.getElementById('factureNumero').textContent = f.invoice_number || f.reference || ('FAC-' + f.id);
+                document.getElementById('datePeriode').textContent = f.period || f.billing_period || '–';
+                document.getElementById('dateEmission').textContent = f.issue_date ? new Date(f.issue_date).toLocaleDateString('fr-FR') : '–';
+                document.getElementById('dateEcheance').textContent = f.due_date ? new Date(f.due_date).toLocaleDateString('fr-FR') : '–';
+
+                // Client
+                document.getElementById('clientNom').textContent = f.company?.name || user.company_name || user.full_name;
+                document.getElementById('clientAdresse').textContent = f.company?.address || 'Abidjan';
+                document.getElementById('clientContact').textContent = f.company?.phone || user.phone || '';
+                document.getElementById('clientEmail').textContent = f.company?.email || user.email || '';
+
+                // Statut
+                const statutBadge = document.getElementById('factureStatut');
+                const isPaid = f.status === 'paid' || f.status === 'payee';
+                if (isPaid) {
+                    statutBadge.innerHTML = '<span class="status-badge status-assigne">Payée</span>';
+                    document.getElementById('btnPayer').style.display = 'none';
+                    document.getElementById('historiqueSection').classList.remove('hidden');
+                    document.getElementById('paiementDate').textContent = f.paid_at ? new Date(f.paid_at).toLocaleString('fr-FR') : '–';
+                    document.getElementById('paiementMethode').textContent = f.payment_method || '–';
+                } else {
+                    statutBadge.innerHTML = '<span class="status-badge status-en-attente">En attente</span>';
+                }
+
+                // Lignes
+                const items = f.items || f.lines || [];
+                const tbody = document.getElementById('lignesTableBody');
+                if (items.length > 0) {
+                    tbody.innerHTML = items.map(item => `
+                        <tr>
+                            <td>
+                                <span class="ligne-titre">${item.description || item.label || 'Prestation'}</span>
+                                ${item.detail ? '<span class="ligne-detail">' + item.detail + '</span>' : ''}
+                            </td>
+                            <td>${(item.quantity || 1).toLocaleString('fr-FR')}</td>
+                            <td>${(item.unit_price || item.price || 0).toLocaleString('fr-FR')}</td>
+                            <td>${(item.total || item.amount || 0).toLocaleString('fr-FR')}</td>
+                        </tr>`).join('');
+                }
+
+                // Totaux
+                const montant = f.amount || f.total_amount || f.subtotal || 0;
+                document.getElementById('sousTotal').textContent = montant.toLocaleString('fr-FR') + ' FCFA';
+                document.getElementById('totalTTC').textContent = montant.toLocaleString('fr-FR') + ' FCFA';
+                document.getElementById('modalMontant').textContent = montant.toLocaleString('fr-FR') + ' FCFA';
+
+            } catch(e) {
+                console.error('[Facture] Erreur:', e.message);
+                document.getElementById('factureNumero').textContent = 'Erreur de chargement';
             }
-            
-            // Client
-            document.getElementById('clientNom').textContent = entreprise.nom || 'ENTREPRISE DEMO';
-            document.getElementById('clientAdresse').textContent = entreprise.adresse || 'Plateau, Abidjan';
-            document.getElementById('clientContact').textContent = entreprise.telephone || '+225 07 00 00 00 00';
-            document.getElementById('clientEmail').textContent = entreprise.email || 'contact@entreprise-demo.ci';
-            
-            // Lignes
-            const tbody = document.getElementById('lignesTableBody');
-            tbody.innerHTML = factureData.lignes.map(ligne => `
-                <tr>
-                    <td>
-                        <span class="ligne-titre">${ligne.titre}</span>
-                        <span class="ligne-detail">${ligne.detail}</span>
-                    </td>
-                    <td>${ligne.qte.toLocaleString('fr-FR')}</td>
-                    <td>${ligne.pu.toLocaleString('fr-FR')}</td>
-                    <td>${ligne.total.toLocaleString('fr-FR')}</td>
-                </tr>
-            `).join('');
-            
-            // Totaux
-            document.getElementById('sousTotal').textContent = factureData.montant.toLocaleString('fr-FR') + ' FCFA';
-            document.getElementById('totalTTC').textContent = factureData.montant.toLocaleString('fr-FR') + ' FCFA';
-            document.getElementById('modalMontant').textContent = factureData.montant.toLocaleString('fr-FR') + ' FCFA';
         }
-        
+
         // Télécharger PDF
         function telechargerPDF() {
-            W2KApp.Notifications.show('Génération du PDF en cours...', 'info');
-            
-            setTimeout(function() {
-                W2KApp.Notifications.show('PDF téléchargé (mode démo)', 'success');
-            }, 1500);
+            if (window.W2KApp?.Notifications) W2KApp.Notifications.show('Génération du PDF en cours...', 'info');
+            else alert('Génération PDF non disponible en mode PWA.');
         }
         
         const API_BASE = 'https://api.jaebets-holding.com';
@@ -519,8 +479,7 @@
             const methodMap = { 'orange-money': 'orange_money', 'mtn-money': 'mtn_momo', 'moov-money': 'moov_money', 'virement': 'bank_transfer' };
             const confirmBtn = document.querySelector('#modalPaiement .btn-primary');
 
-            let token = null;
-            try { token = JSON.parse(localStorage.getItem('navette_session') || '{}').token; } catch(e) {}
+            const token = NavetteAuth.getToken();
             if (!token) { alert('Session expirée. Reconnectez-vous.'); window.location.href = 'connexion.html'; return; }
 
             // Récupérer montant depuis la page
