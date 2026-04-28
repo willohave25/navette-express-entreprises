@@ -382,34 +382,48 @@
         btn.querySelector('.btn-loader').classList.remove('hidden');
 
         try {
-          const result = await SupabaseConfig.register({
-            email: email,
-            password: password,
-            nom: nom,
-            rccm: rccm,
-            secteur: secteur,
-            nombreEmployes: nombreEmployes,
-            adresse: adresse,
-            responsableNom: responsable,
-            telephone: telephone
+          /* Inscription via API VPS directement */
+          const API_BASE = 'https://api.jaebets-holding.com';
+          const regRes = await fetch(API_BASE + '/api/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: email,
+              password: password,
+              full_name: responsable,
+              phone: telephone,
+              role: 'enterprise_admin',
+              company_name: nom,
+              rccm: rccm,
+              secteur: secteur,
+              nombre_employes: nombreEmployes,
+              adresse: adresse
+            })
           });
-
-          if (result.success) {
-            successMsg.classList.remove('hidden');
-            /* Connecter automatiquement après inscription */
-            const loginResult = await SupabaseConfig.login(email, password);
-            if (loginResult.success) {
-              setTimeout(function() {
-                window.location.href = 'dashboard.html';
-              }, 1500);
-            } else {
-              setTimeout(function() {
-                window.location.href = 'connexion.html';
-              }, 1500);
-            }
-          } else {
-            throw new Error(result.error || 'Erreur lors de la création du compte');
+          const regData = await regRes.json();
+          if (!regData.success) {
+            throw new Error(regData.error?.message || 'Erreur lors de la création du compte');
           }
+
+          /* Sauvegarder la session */
+          const token = regData.data.token;
+          const user = regData.data.user;
+          localStorage.setItem('navette_entreprise_token', token);
+          localStorage.setItem('token', token);
+          localStorage.setItem('user', JSON.stringify({
+            email: user.email,
+            full_name: user.full_name,
+            role: user.role,
+            company_id: user.company_id,
+            entreprise: nom
+          }));
+          localStorage.setItem('navette_entreprise_user', JSON.stringify(user));
+
+          successMsg.classList.remove('hidden');
+          setTimeout(function() {
+            window.location.href = 'dashboard.html';
+          }, 1500);
+
         } catch (error) {
           erreurTexte.textContent = error.message || 'Erreur de connexion. Veuillez réessayer.';
           erreurGlobal.classList.remove('hidden');
