@@ -131,7 +131,7 @@
         
         <!-- Contenu Facturation -->
         <div class="page-content">
-            
+
             <!-- Titre Desktop -->
             <header class="page-header desktop-only">
                 <div class="page-header-content">
@@ -139,300 +139,52 @@
                     <p class="page-subtitle">Gérez vos factures et paiements</p>
                 </div>
             </header>
-            
-            <!-- Résumé financier -->
+
+            <!-- Résumé financier dynamique -->
             <section class="finance-summary">
-                <div class="finance-card finance-card-main">
-                    <div class="finance-card-header">
-                        <span class="finance-card-label">Facture en cours</span>
-                        <span class="finance-card-period">Mars 2026</span>
-                    </div>
-                    <div class="finance-card-amount">850 000 FCFA</div>
-                    <div class="finance-card-footer">
-                        <span class="finance-card-status status-badge status-en-attente">À payer avant le 05/04</span>
-                    </div>
-                    <button type="button" class="btn btn-primary btn-pay" onclick="ouvrirPaiement()">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
-                            <line x1="1" y1="10" x2="23" y2="10"/>
+                <div class="finance-card finance-card-main" id="cardFactureEnCours">
+                    <div style="text-align:center;padding:20px;color:rgba(255,255,255,0.4);">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin 1s linear infinite;">
+                            <circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 10 10"/>
                         </svg>
-                        Payer maintenant
-                    </button>
+                        <p style="font-size:13px;margin-top:8px;">Chargement...</p>
+                    </div>
                 </div>
-                
                 <div class="finance-stats">
                     <div class="finance-stat">
                         <div class="finance-stat-icon finance-stat-success">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="20 6 9 17 4 12"/>
-                            </svg>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
                         </div>
                         <div class="finance-stat-content">
-                            <span class="finance-stat-value">2 450 000</span>
-                            <span class="finance-stat-label">Total payé (2026)</span>
+                            <span class="finance-stat-value" id="statTotalPaye">—</span>
+                            <span class="finance-stat-label">Total payé</span>
                         </div>
                     </div>
                     <div class="finance-stat">
                         <div class="finance-stat-icon finance-stat-warning">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="10"/>
-                                <polyline points="12 6 12 12 16 14"/>
-                            </svg>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                         </div>
                         <div class="finance-stat-content">
-                            <span class="finance-stat-value">850 000</span>
+                            <span class="finance-stat-value" id="statEnAttente">—</span>
                             <span class="finance-stat-label">En attente</span>
                         </div>
                     </div>
                 </div>
             </section>
-            
-            <!-- Filtres -->
-            <section class="filters-section">
-                <div class="filter-row">
-                    <div class="filter-select-wrapper">
-                        <select id="filterAnnee" class="filter-select">
-                            <option value="2026" selected>2026</option>
-                            <option value="2025">2025</option>
-                        </select>
-                        <svg class="filter-select-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="6 9 12 15 18 9"/>
-                        </svg>
-                    </div>
-                    
-                    <div class="filter-select-wrapper">
-                        <select id="filterStatut" class="filter-select">
-                            <option value="">Tous les statuts</option>
-                            <option value="payee">Payée</option>
-                            <option value="en-attente">En attente</option>
-                            <option value="retard">En retard</option>
-                        </select>
-                        <svg class="filter-select-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="6 9 12 15 18 9"/>
-                        </svg>
-                    </div>
-                </div>
-            </section>
-            
-            <!-- Liste des factures -->
+
+            <!-- Liste des factures dynamique -->
             <section class="factures-section">
                 <h2 class="section-title">Historique des factures</h2>
-                
-                <div class="factures-list">
-                    
-                    <!-- Facture en attente -->
-                    <article class="facture-card" data-id="1" data-status="en-attente">
-                        <div class="facture-header">
-                            <div class="facture-icon facture-icon-warning">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                                    <polyline points="14 2 14 8 20 8"/>
-                                </svg>
-                            </div>
-                            <div class="facture-info">
-                                <h3 class="facture-numero">FAC-2026-003</h3>
-                                <span class="facture-periode">Mars 2026</span>
-                            </div>
-                            <div class="facture-status">
-                                <span class="status-badge status-en-attente">En attente</span>
-                            </div>
-                        </div>
-                        
-                        <div class="facture-details">
-                            <div class="facture-detail">
-                                <span class="facture-detail-label">Montant</span>
-                                <span class="facture-detail-value">850 000 FCFA</span>
-                            </div>
-                            <div class="facture-detail">
-                                <span class="facture-detail-label">Échéance</span>
-                                <span class="facture-detail-value">05/04/2026</span>
-                            </div>
-                            <div class="facture-detail">
-                                <span class="facture-detail-label">Corridors</span>
-                                <span class="facture-detail-value">3 actifs</span>
-                            </div>
-                        </div>
-                        
-                        <div class="facture-actions">
-                            <a href="detail-facture.html?id=1" class="btn btn-outline btn-sm">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                                    <circle cx="12" cy="12" r="3"/>
-                                </svg>
-                                Détails
-                            </a>
-                            <button type="button" class="btn btn-primary btn-sm" onclick="ouvrirPaiement()">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
-                                    <line x1="1" y1="10" x2="23" y2="10"/>
-                                </svg>
-                                Payer
-                            </button>
-                        </div>
-                    </article>
-                    
-                    <!-- Facture payée -->
-                    <article class="facture-card" data-id="2" data-status="payee">
-                        <div class="facture-header">
-                            <div class="facture-icon facture-icon-success">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                                    <polyline points="14 2 14 8 20 8"/>
-                                    <polyline points="9 15 11 17 15 13"/>
-                                </svg>
-                            </div>
-                            <div class="facture-info">
-                                <h3 class="facture-numero">FAC-2026-002</h3>
-                                <span class="facture-periode">Février 2026</span>
-                            </div>
-                            <div class="facture-status">
-                                <span class="status-badge status-assigne">Payée</span>
-                            </div>
-                        </div>
-                        
-                        <div class="facture-details">
-                            <div class="facture-detail">
-                                <span class="facture-detail-label">Montant</span>
-                                <span class="facture-detail-value">820 000 FCFA</span>
-                            </div>
-                            <div class="facture-detail">
-                                <span class="facture-detail-label">Payée le</span>
-                                <span class="facture-detail-value">02/03/2026</span>
-                            </div>
-                            <div class="facture-detail">
-                                <span class="facture-detail-label">Méthode</span>
-                                <span class="facture-detail-value">Mobile Money</span>
-                            </div>
-                        </div>
-                        
-                        <div class="facture-actions">
-                            <a href="detail-facture.html?id=2" class="btn btn-outline btn-sm">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                                    <circle cx="12" cy="12" r="3"/>
-                                </svg>
-                                Détails
-                            </a>
-                            <button type="button" class="btn btn-outline btn-sm" onclick="telechargerFacture(2)">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                    <polyline points="7 10 12 15 17 10"/>
-                                    <line x1="12" y1="15" x2="12" y2="3"/>
-                                </svg>
-                                PDF
-                            </button>
-                        </div>
-                    </article>
-                    
-                    <!-- Facture payée -->
-                    <article class="facture-card" data-id="3" data-status="payee">
-                        <div class="facture-header">
-                            <div class="facture-icon facture-icon-success">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                                    <polyline points="14 2 14 8 20 8"/>
-                                    <polyline points="9 15 11 17 15 13"/>
-                                </svg>
-                            </div>
-                            <div class="facture-info">
-                                <h3 class="facture-numero">FAC-2026-001</h3>
-                                <span class="facture-periode">Janvier 2026</span>
-                            </div>
-                            <div class="facture-status">
-                                <span class="status-badge status-assigne">Payée</span>
-                            </div>
-                        </div>
-                        
-                        <div class="facture-details">
-                            <div class="facture-detail">
-                                <span class="facture-detail-label">Montant</span>
-                                <span class="facture-detail-value">780 000 FCFA</span>
-                            </div>
-                            <div class="facture-detail">
-                                <span class="facture-detail-label">Payée le</span>
-                                <span class="facture-detail-value">03/02/2026</span>
-                            </div>
-                            <div class="facture-detail">
-                                <span class="facture-detail-label">Méthode</span>
-                                <span class="facture-detail-value">Virement bancaire</span>
-                            </div>
-                        </div>
-                        
-                        <div class="facture-actions">
-                            <a href="detail-facture.html?id=3" class="btn btn-outline btn-sm">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                                    <circle cx="12" cy="12" r="3"/>
-                                </svg>
-                                Détails
-                            </a>
-                            <button type="button" class="btn btn-outline btn-sm" onclick="telechargerFacture(3)">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                    <polyline points="7 10 12 15 17 10"/>
-                                    <line x1="12" y1="15" x2="12" y2="3"/>
-                                </svg>
-                                PDF
-                            </button>
-                        </div>
-                    </article>
-                    
-                    <!-- Facture 2025 -->
-                    <article class="facture-card" data-id="4" data-status="payee" data-annee="2025">
-                        <div class="facture-header">
-                            <div class="facture-icon facture-icon-success">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                                    <polyline points="14 2 14 8 20 8"/>
-                                    <polyline points="9 15 11 17 15 13"/>
-                                </svg>
-                            </div>
-                            <div class="facture-info">
-                                <h3 class="facture-numero">FAC-2025-012</h3>
-                                <span class="facture-periode">Décembre 2025</span>
-                            </div>
-                            <div class="facture-status">
-                                <span class="status-badge status-assigne">Payée</span>
-                            </div>
-                        </div>
-                        
-                        <div class="facture-details">
-                            <div class="facture-detail">
-                                <span class="facture-detail-label">Montant</span>
-                                <span class="facture-detail-value">750 000 FCFA</span>
-                            </div>
-                            <div class="facture-detail">
-                                <span class="facture-detail-label">Payée le</span>
-                                <span class="facture-detail-value">05/01/2026</span>
-                            </div>
-                            <div class="facture-detail">
-                                <span class="facture-detail-label">Méthode</span>
-                                <span class="facture-detail-value">Orange Money</span>
-                            </div>
-                        </div>
-                        
-                        <div class="facture-actions">
-                            <a href="detail-facture.html?id=4" class="btn btn-outline btn-sm">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                                    <circle cx="12" cy="12" r="3"/>
-                                </svg>
-                                Détails
-                            </a>
-                            <button type="button" class="btn btn-outline btn-sm" onclick="telechargerFacture(4)">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                    <polyline points="7 10 12 15 17 10"/>
-                                    <line x1="12" y1="15" x2="12" y2="3"/>
-                                </svg>
-                                PDF
-                            </button>
-                        </div>
-                    </article>
-                    
+                <div class="factures-list" id="facturesList">
+                    <div style="text-align:center;padding:40px;color:rgba(255,255,255,0.4);">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin 1s linear infinite;">
+                            <circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 10 10"/>
+                        </svg>
+                        <p style="margin-top:10px;font-size:14px;">Chargement des factures...</p>
+                    </div>
                 </div>
             </section>
-            
+
         </div>
         
         <!-- Bottom Navigation Mobile -->
@@ -502,7 +254,7 @@
             <div class="modal-body">
                 <div class="paiement-amount">
                     <span class="paiement-label">Montant à payer</span>
-                    <span class="paiement-value">850 000 FCFA</span>
+                    <span class="paiement-value">—</span>
                 </div>
                 
                 <div class="paiement-methods">
@@ -586,74 +338,175 @@
     <!-- Scripts -->
     
     
-    <script src="js/fineopay-config.js"></script>
+
     <script src="auth-api.js"></script>
-  <script src="js/app.js"></script>
+    <script src="js/app.js"></script>
     <script>
-        // Initialisation
-        document.addEventListener('DOMContentLoaded', function() {
-            // Vérifier authentification
-            const entrepriseData = W2KApp.Utils.storage.get('entreprise');
-            if (!entrepriseData) {
-                window.location.href = 'connexion.html';
-                return;
-            }
-            
-            // Initialiser navigation
-            W2KApp.Navigation.init();
-            
-            // Initialiser filtres
-            initFiltres();
-            
-            // Déconnexion
-            document.getElementById('btnLogout')?.addEventListener('click', function(e) {
-                e.preventDefault();
-                W2KApp.Auth.logout();
-            });
-        });
-        
-        // Filtres
-        function initFiltres() {
-            document.getElementById('filterAnnee').addEventListener('change', filtrerFactures);
-            document.getElementById('filterStatut').addEventListener('change', filtrerFactures);
-        }
-        
-        function filtrerFactures() {
-            const annee = document.getElementById('filterAnnee').value;
-            const statut = document.getElementById('filterStatut').value;
-            
-            const factures = document.querySelectorAll('.facture-card');
-            
-            factures.forEach(facture => {
-                const factureAnnee = facture.dataset.annee || '2026';
-                const factureStatut = facture.dataset.status;
-                
-                let visible = true;
-                
-                // Filtre année
-                if (annee && factureAnnee !== annee) {
-                    visible = false;
-                }
-                
-                // Filtre statut
-                if (statut && factureStatut !== statut) {
-                    visible = false;
-                }
-                
-                facture.style.display = visible ? 'block' : 'none';
-            });
-        }
-        
-        const API_BASE = 'https://api.jaebets-holding.com';
-        const OM_URL = 'https://multi.app.orange-money.com/app/v1/kapptivate/qrcode/odyssee/?id=codgen51-ff194b337b9443fdbf76085714770a5c&v=1';
-        const WAVE_URL = 'https://pay.wave.com/m/M_ci_qVXNsCLnbm0v/c/ci/';
+        const API_BASE  = 'https://api.jaebets-holding.com';
+        const OM_URL    = 'https://multi.app.orange-money.com/app/v1/kapptivate/qrcode/odyssee/?id=codgen51-ff194b337b9443fdbf76085714770a5c&v=1';
+        const WAVE_URL  = 'https://pay.wave.com/m/M_ci_qVXNsCLnbm0v/c/ci/';
+        const fmt = n => new Intl.NumberFormat('fr-FR').format(n) + ' FCFA';
         let factureEnCours = null;
 
-        /* ── Ouvrir modal paiement ─────────────────── */
+        function getToken() {
+            return localStorage.getItem('navette_entreprise_token')
+                || localStorage.getItem('token') || null;
+        }
+        function getUser() {
+            try { return JSON.parse(localStorage.getItem('navette_entreprise_user') || 'null'); } catch(e) { return null; }
+        }
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            const token = getToken();
+            const user  = getUser();
+            if (!token || !user) { window.location.href = 'connexion.html'; return; }
+
+            document.getElementById('btnLogout')?.addEventListener('click', function() {
+                NavetteAuth.logout();
+            });
+
+            const companyId = user.company_id;
+            if (!companyId) {
+                document.getElementById('cardFactureEnCours').innerHTML =
+                    '<p style="color:rgba(255,255,255,0.5);padding:20px;text-align:center;font-size:14px;">Aucune entreprise associée.</p>';
+                document.getElementById('facturesList').innerHTML =
+                    '<p style="color:rgba(255,255,255,0.4);padding:40px;text-align:center;">Aucune facture disponible.</p>';
+                return;
+            }
+
+            try {
+                const res = await fetch(API_BASE + '/api/companies/' + companyId + '/invoices', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const data = await res.json();
+                if (!data.success) throw new Error(data.error?.message || 'Erreur API');
+                renderFactures(data.data || []);
+            } catch(err) {
+                document.getElementById('facturesList').innerHTML =
+                    '<p style="color:#ff6b6b;padding:40px;text-align:center;">Erreur : ' + err.message + '</p>';
+                document.getElementById('cardFactureEnCours').innerHTML =
+                    '<p style="color:#ff6b6b;padding:20px;text-align:center;font-size:14px;">Impossible de charger.</p>';
+            }
+        });
+
+        function renderFactures(factures) {
+            const totalPaye    = factures.filter(f => f.status === 'paid').reduce((s,f) => s + (f.total_amount||0), 0);
+            const totalAttente = factures.filter(f => ['pending','sent','overdue'].includes(f.status)).reduce((s,f) => s + (f.total_amount||0), 0);
+            document.getElementById('statTotalPaye').textContent  = fmt(totalPaye);
+            document.getElementById('statEnAttente').textContent  = fmt(totalAttente);
+
+            const enCours = factures.find(f => ['pending','sent','overdue'].includes(f.status));
+            const cardEl  = document.getElementById('cardFactureEnCours');
+            if (enCours) {
+                const echeance = enCours.due_date ? new Date(enCours.due_date).toLocaleDateString('fr-FR') : '—';
+                cardEl.innerHTML = `
+                    <div class="finance-card-header">
+                        <span class="finance-card-label">Facture en cours</span>
+                        <span class="finance-card-period">${enCours.invoice_number}</span>
+                    </div>
+                    <div class="finance-card-amount">${fmt(enCours.total_amount)}</div>
+                    <div class="finance-card-footer">
+                        <span class="finance-card-status status-badge status-en-attente">À payer avant le ${echeance}</span>
+                    </div>
+                    <button type="button" class="btn btn-primary btn-pay"
+                        onclick="ouvrirPaiement('${enCours.id}', ${enCours.total_amount})">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                            <line x1="1" y1="10" x2="23" y2="10"/>
+                        </svg>
+                        Payer maintenant
+                    </button>`;
+            } else {
+                cardEl.innerHTML = `
+                    <div style="text-align:center;padding:24px;">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#2EC4B6" stroke-width="2" style="margin-bottom:10px;">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                        <p style="color:#2EC4B6;font-weight:600;margin:0 0 4px;">Aucune facture en attente</p>
+                        <p style="color:rgba(255,255,255,0.4);font-size:13px;margin:0;">Vous êtes à jour !</p>
+                    </div>`;
+            }
+
+            const list = document.getElementById('facturesList');
+            if (!factures.length) {
+                list.innerHTML = `
+                    <div style="text-align:center;padding:48px 20px;">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" style="margin-bottom:16px;">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                        </svg>
+                        <p style="color:rgba(255,255,255,0.4);margin:0;font-size:15px;">Aucune facture pour le moment</p>
+                        <p style="color:rgba(255,255,255,0.25);margin:8px 0 0;font-size:13px;">Les factures apparaissent chaque mois</p>
+                    </div>`;
+                return;
+            }
+
+            const statusMap = {
+                draft:    { label:'Brouillon',  css:'status-inactif' },
+                pending:  { label:'En attente', css:'status-en-attente' },
+                sent:     { label:'Envoyée',    css:'status-en-attente' },
+                paid:     { label:'Payée',      css:'status-assigne' },
+                overdue:  { label:'En retard',  css:'status-annule' },
+                cancelled:{ label:'Annulée',    css:'status-annule' }
+            };
+
+            list.innerHTML = factures.map(f => {
+                const st       = statusMap[f.status] || { label:f.status, css:'' };
+                const isPaid   = f.status === 'paid';
+                const isPending= ['pending','sent','overdue'].includes(f.status);
+                const d = f.period_start ? new Date(f.period_start).toLocaleDateString('fr-FR',{month:'long',year:'numeric'}) : '—';
+                const dateInfo = isPaid
+                    ? (f.paid_at ? 'Payée le ' + new Date(f.paid_at).toLocaleDateString('fr-FR') : '—')
+                    : (f.due_date ? new Date(f.due_date).toLocaleDateString('fr-FR') : '—');
+                const methode  = f.payment_method ? f.payment_method.replace(/_/g,' ') : '—';
+                return `
+                <article class="facture-card">
+                    <div class="facture-header">
+                        <div class="facture-icon ${isPaid?'facture-icon-success':'facture-icon-warning'}">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14 2 14 8 20 8"/>
+                                ${isPaid?'<polyline points="9 15 11 17 15 13"/>':''}
+                            </svg>
+                        </div>
+                        <div class="facture-info">
+                            <h3 class="facture-numero">${f.invoice_number}</h3>
+                            <span class="facture-periode">${d}</span>
+                        </div>
+                        <div class="facture-status">
+                            <span class="status-badge ${st.css}">${st.label}</span>
+                        </div>
+                    </div>
+                    <div class="facture-details">
+                        <div class="facture-detail">
+                            <span class="facture-detail-label">Montant</span>
+                            <span class="facture-detail-value">${fmt(f.total_amount)}</span>
+                        </div>
+                        <div class="facture-detail">
+                            <span class="facture-detail-label">${isPaid?'Payée le':'Échéance'}</span>
+                            <span class="facture-detail-value">${dateInfo}</span>
+                        </div>
+                        ${isPaid?`<div class="facture-detail"><span class="facture-detail-label">Méthode</span><span class="facture-detail-value">${methode}</span></div>`:''}
+                    </div>
+                    <div class="facture-actions">
+                        ${isPending?`<button type="button" class="btn btn-primary btn-sm" onclick="ouvrirPaiement('${f.id}',${f.total_amount})">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/>
+                            </svg>Payer</button>`:''}
+                        ${f.pdf_url?`<a href="${f.pdf_url}" target="_blank" class="btn btn-outline btn-sm">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>PDF</a>`:''}
+                    </div>
+                </article>`;
+            }).join('');
+        }
+
         function ouvrirPaiement(factureId, montant) {
             factureEnCours = { factureId, montant };
             const el = document.querySelector('.paiement-value');
-            if (el && montant) el.textContent = new Intl.NumberFormat('fr-FR').format(montant) + ' FCFA';
+            if (el) el.textContent = fmt(montant);
             document.getElementById('modalPaiement').classList.remove('hidden');
         }
 
@@ -661,62 +514,58 @@
             document.querySelectorAll('.modal-overlay').forEach(m => m.classList.add('hidden'));
         }
 
-        /* ── Procéder au paiement ─────────────────── */
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.modal-overlay').forEach(o => {
+                o.addEventListener('click', e => { if (e.target === o) fermerModal(); });
+            });
+        });
+
         async function procederPaiement() {
             const methode = document.querySelector('input[name="methodePaiement"]:checked').value;
-            const montant = factureEnCours?.montant || 0;
+            const montant = factureEnCours?.montant;
             if (!montant) { alert('Montant introuvable.'); return; }
 
-            /* Orange Money ou Wave → lien externe + confirmation */
             if (methode === 'orange-money' || methode === 'wave') {
                 fermerModal();
                 ouvrirInstructionsMobile(methode, montant);
                 return;
             }
 
-            /* MTN / Virement → via API */
-            const methodMap = { 'mtn-money': 'mtn_momo', 'virement': 'bank_transfer' };
+            const methodMap = { 'mtn-money':'mtn_momo', 'virement':'bank_transfer' };
+            const token = getToken();
+            if (!token) { window.location.href = 'connexion.html'; return; }
             const confirmBtn = document.querySelector('#modalPaiement .btn-primary');
-
-            let token = null;
-            try { token = JSON.parse(localStorage.getItem('navette_session') || '{}').token; } catch(e) {}
-            if (!token) { alert('Session expirée. Reconnectez-vous.'); window.location.href = 'connexion.html'; return; }
-
             confirmBtn.disabled = true;
             confirmBtn.textContent = 'Traitement...';
             try {
                 const res = await fetch(API_BASE + '/api/payments/initiate', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-                    body: JSON.stringify({
-                        amount: montant,
-                        payment_method: methodMap[methode] || 'bank_transfer',
-                        description: 'Paiement facture' + (factureEnCours?.factureId ? ' #' + factureEnCours.factureId : '')
-                    })
+                    method:'POST',
+                    headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+                    body: JSON.stringify({ amount:montant, payment_method:methodMap[methode]||'bank_transfer',
+                        description:'Facture '+(factureEnCours?.factureId||'') })
                 });
                 const data = await res.json();
-                if (!data.success) throw new Error(data.error?.message || 'Erreur paiement');
+                if (!data.success) throw new Error(data.error?.message||'Erreur');
                 fermerModal();
-                alert('✅ Paiement enregistré. Votre facture est en cours de traitement.');
-                setTimeout(() => window.location.reload(), 1500);
-            } catch(err) {
-                alert('Erreur : ' + err.message);
-            } finally {
-                confirmBtn.disabled = false;
-                confirmBtn.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Confirmer';
+                alert('Paiement enregistré.');
+                setTimeout(()=>location.reload(),1200);
+            } catch(err) { alert('Erreur : '+err.message); }
+            finally {
+                confirmBtn.disabled=false;
+                confirmBtn.innerHTML='<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Confirmer';
             }
         }
 
-        /* ── Instructions OM / Wave ───────────────── */
         function ouvrirInstructionsMobile(methode, montant) {
-            const fmt = new Intl.NumberFormat('fr-FR').format(montant);
-            const isOM = methode === 'orange-money';
-            const couleur = isOM ? '#FF6600' : '#00B8FA';
-            const nom = isOM ? 'Orange Money' : 'Wave';
-            const icone = isOM ? 'OM' : 'W';
-            const lien = isOM ? OM_URL : WAVE_URL + '?amount=' + montant;
-            const btnLabel = isOM ? '📱 Ouvrir Orange Money' : '💙 Ouvrir Wave';
+            const isOM   = methode==='orange-money';
+            const couleur= isOM?'#FF6600':'#00B8FA';
+            const nom    = isOM?'Orange Money':'Wave';
+            const icone  = isOM?'OM':'W';
+            const lien   = isOM ? OM_URL : WAVE_URL+'?amount='+montant;
+            const btnLbl = isOM?'📱 Ouvrir Orange Money':'💙 Ouvrir Wave';
+            const montantFmt = fmt(montant);
 
+            document.getElementById('instrOverlayEntreprise')?.remove();
             const div = document.createElement('div');
             div.id = 'instrOverlayEntreprise';
             div.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:200;display:flex;align-items:flex-end;';
@@ -725,23 +574,22 @@
                 <div style="text-align:center;margin-bottom:20px;">
                   <div style="width:60px;height:60px;border-radius:16px;background:${couleur};color:#fff;font-weight:700;font-size:22px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">${icone}</div>
                   <h3 style="color:#fff;margin:0 0 6px;font-size:18px;">Paiement ${nom}</h3>
-                  <p style="color:rgba(255,255,255,0.5);font-size:13px;margin:0;">Suivez les étapes ci-dessous</p>
                 </div>
-                <div style="background:rgba(200,169,81,0.12);border:1px solid rgba(200,169,81,0.3);border-radius:12px;padding:16px;margin-bottom:20px;text-align:center;">
+                <div style="background:rgba(200,169,81,0.15);border:1px solid rgba(200,169,81,0.3);border-radius:12px;padding:16px;margin-bottom:20px;text-align:center;">
                   <p style="color:rgba(255,255,255,0.6);font-size:12px;margin:0 0 4px;">Montant à régler</p>
-                  <p style="color:#C9A84C;font-size:28px;font-weight:700;margin:0;">${fmt} FCFA</p>
+                  <p style="color:#C9A84C;font-size:28px;font-weight:700;margin:0;">${montantFmt}</p>
                 </div>
                 <div style="background:rgba(255,255,255,0.04);border-radius:12px;padding:14px;margin-bottom:20px;">
-                  <ol style="color:rgba(255,255,255,0.7);font-size:13px;margin:0;padding-left:18px;line-height:1.9;">
+                  <ol style="color:rgba(255,255,255,0.7);font-size:13px;margin:0;padding-left:18px;line-height:2;">
                     <li>Appuyez sur le bouton ci-dessous pour ouvrir ${nom}</li>
-                    <li>Entrez le montant <strong style="color:#C9A84C">${fmt} FCFA</strong></li>
-                    <li>Validez avec votre code secret ${nom}</li>
-                    <li>Revenez ici et confirmez votre paiement</li>
+                    <li>Saisissez le montant <strong style="color:#C9A84C">${montantFmt}</strong></li>
+                    <li>Validez avec votre code secret</li>
+                    <li>Revenez ici et confirmez le paiement</li>
                   </ol>
                 </div>
                 <a href="${lien}" target="_blank" rel="noopener"
                   style="display:block;text-align:center;padding:15px;border-radius:12px;font-weight:700;font-size:16px;text-decoration:none;background:${couleur};color:#fff;margin-bottom:12px;">
-                  ${btnLabel}
+                  ${btnLbl}
                 </a>
                 <button onclick="confirmerPaiementEntreprise()"
                   style="width:100%;padding:15px;background:#2EC4B6;border:none;border-radius:12px;color:#0F1A2E;font-weight:700;font-size:16px;cursor:pointer;font-family:inherit;margin-bottom:8px;">
@@ -757,27 +605,8 @@
 
         function confirmerPaiementEntreprise() {
             document.getElementById('instrOverlayEntreprise')?.remove();
-            alert('✅ Paiement enregistré ! Notre équipe va confirmer votre règlement sous 24h.\n\nEn cas de question : WhatsApp +225 07 03 28 53 59');
+            alert('Paiement transmis !\nNotre équipe confirme sous 24h.\nWhatsApp : +225 07 03 28 53 59');
         }
-        
-        // Télécharger facture PDF
-        function telechargerFacture(id) {
-            // En production: générer et télécharger PDF
-            W2KApp.Notifications.show('Téléchargement de la facture...', 'info');
-            
-            setTimeout(function() {
-                W2KApp.Notifications.show('Facture téléchargée (mode démo)', 'success');
-            }, 1500);
-        }
-        
-        // Fermer modal au clic extérieur
-        document.querySelectorAll('.modal-overlay').forEach(overlay => {
-            overlay.addEventListener('click', function(e) {
-                if (e.target === this) {
-                    fermerModal();
-                }
-            });
-        });
     </script>
 </body>
 </html>
