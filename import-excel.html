@@ -318,12 +318,12 @@
         // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
             // Vérifier authentification
-            const entrepriseData = W2KApp.Utils.storage.get('entreprise');
-            if (!entrepriseData) {
+            const user = NavetteAuth.getUser();
+            if (!user) {
                 window.location.href = 'connexion.html';
                 return;
             }
-            
+
             initDropZone();
             initFileInput();
         });
@@ -382,7 +382,7 @@
             const extension = '.' + file.name.split('.').pop().toLowerCase();
             
             if (!validExtensions.includes(extension)) {
-                W2KApp.Notifications.show('Format de fichier non supporté', 'error');
+                if (window.Toast) Toast.error('Format invalide', 'Format de fichier non supporté (.xlsx, .xls, .csv uniquement)'); else alert('Format de fichier non supporté');
                 return;
             }
             
@@ -581,7 +581,7 @@
             link.click();
             URL.revokeObjectURL(url);
             
-            W2KApp.Notifications.show('Modèle téléchargé', 'success');
+            if (window.Toast) Toast.success('Téléchargement', 'Modèle téléchargé');
         }
     </script>
 </body>

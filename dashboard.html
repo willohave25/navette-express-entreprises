@@ -594,8 +594,6 @@
             const nomEl = document.getElementById('entrepriseNom');
             if (nomEl) nomEl.textContent = user.company_name || user.full_name || 'Mon Entreprise';
 
-            // Navigation
-            if (window.W2KApp?.Navigation) W2KApp.Navigation.init();
 
             // Déconnexion
             document.getElementById('btnLogout')?.addEventListener('click', function(e) {

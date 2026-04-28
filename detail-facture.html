@@ -458,7 +458,7 @@
 
         // Télécharger PDF
         function telechargerPDF() {
-            if (window.W2KApp?.Notifications) W2KApp.Notifications.show('Génération du PDF en cours...', 'info');
+            if (window.Toast) Toast.info('PDF', 'Génération du PDF en cours...');
             else alert('Génération PDF non disponible en mode PWA.');
         }
         
@@ -506,7 +506,7 @@
                 if (!data.success) throw new Error(data.error?.message || 'Erreur paiement');
 
                 fermerModal();
-                W2KApp.Notifications.show('Paiement confirmé !', 'success');
+                if (window.Toast) Toast.success('Paiement', 'Paiement confirmé !');
                 setTimeout(() => window.location.href = 'facturation.html', 2000);
             } catch(err) {
                 alert('Erreur : ' + err.message);

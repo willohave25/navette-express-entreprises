@@ -719,7 +719,6 @@
             const user = NavetteAuth.getUser();
             if (!user) { window.location.href = 'connexion.html'; return; }
 
-            if (window.W2KApp?.Navigation) W2KApp.Navigation.init();
 
             initRecherche();
             initFiltres();
@@ -789,9 +788,11 @@
         function initRecherche() {
             const searchInput = document.getElementById('searchEmployes');
             
-            searchInput.addEventListener('input', W2KApp.Utils.debounce(function() {
-                filtrerEmployes();
-            }, 300));
+            let _searchTimer;
+            searchInput.addEventListener('input', function() {
+                clearTimeout(_searchTimer);
+                _searchTimer = setTimeout(filtrerEmployes, 300);
+            });
         }
         
         // Filtres
@@ -859,7 +860,7 @@
                     body: JSON.stringify({ full_name: data.nom, employee_id: data.matricule, phone: data.telephone, email: data.email, zone: data.zone, corridor_id: data.corridor || null })
                 });
                 if (res?.success) {
-                    if (window.W2KApp?.Notifications) W2KApp.Notifications.show('Employé ajouté avec succès', 'success');
+                    if (window.Toast) Toast.success('Employé', 'Employé ajouté avec succès');
                     fermerModal();
                     e.target.reset();
                     window.location.reload();
@@ -875,7 +876,7 @@
         function modifierEmploye(id) {
             // Rediriger ou ouvrir modal modification
             console.log('Modifier employé:', id);
-            W2KApp.Notifications.show('Fonctionnalité en développement', 'info');
+            if (window.Toast) Toast.info('Info', 'Fonctionnalité en développement');
         }
         
         function supprimerEmploye(id) {
@@ -892,7 +893,7 @@
                 } catch(e) {}
                 const card = document.querySelector(`[data-id="${employeIdCourant}"]`);
                 if (card) card.remove();
-                if (window.W2KApp?.Notifications) W2KApp.Notifications.show('Employé supprimé', 'success');
+                if (window.Toast) Toast.success('Employé', 'Employé supprimé');
                 fermerModal();
             }
         }
@@ -910,7 +911,7 @@
             const corridorId = document.getElementById('selectCorridorAssigner').value;
             
             if (!corridorId) {
-                W2KApp.Notifications.show('Veuillez sélectionner un corridor', 'error');
+                if (window.Toast) Toast.error('Assignation', 'Veuillez sélectionner un corridor'); else alert('Veuillez sélectionner un corridor');
                 return;
             }
             
@@ -925,7 +926,7 @@
                     badge.textContent = 'Assigné';
                 }
                 
-                W2KApp.Notifications.show('Employé assigné avec succès', 'success');
+                if (window.Toast) Toast.success('Assignation', 'Employé assigné avec succès');
                 fermerModal();
                 
                 // En production: SupabaseAPI.assignerEmploye(employeIdCourant, corridorId)

@@ -642,15 +642,15 @@
         // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
             // Vérifier authentification
-            const entrepriseData = W2KApp.Utils.storage.get('entreprise');
-            if (!entrepriseData) {
+            const user = NavetteAuth.getUser();
+            if (!user) {
                 window.location.href = 'connexion.html';
                 return;
             }
-            
+
             // Initialiser les écouteurs
             initFormListeners();
-            
+
             // Afficher étape 1
             showStep(1);
         });
@@ -805,7 +805,7 @@
             });
             
             if (!isValid) {
-                W2KApp.Notifications.show('Veuillez remplir tous les champs obligatoires', 'error');
+                if (window.Toast) Toast.error('Champs manquants', 'Veuillez remplir tous les champs obligatoires'); else alert('Veuillez remplir tous les champs obligatoires');
             }
             
             return isValid;
@@ -892,7 +892,7 @@
             
             // Coût estimé
             const cout = calculerCout();
-            document.getElementById('summaryCoût').textContent = W2KApp.Utils.formatFCFA(cout);
+            document.getElementById('summaryCoût').textContent = cout.toLocaleString('fr-FR') + ' FCFA';
         }
         
         // Calculer coût
@@ -931,39 +931,45 @@
         }
         
         // Soumettre corridor
-        function submitCorridor(event) {
+        async function submitCorridor(event) {
             event.preventDefault();
-            
-            // Vérifier conditions acceptées
+
             if (!document.getElementById('acceptTerms').checked) {
-                W2KApp.Notifications.show('Veuillez accepter les conditions générales', 'error');
+                if (window.Toast) Toast.error('Conditions', 'Veuillez accepter les conditions générales'); else alert('Veuillez accepter les conditions générales');
                 return;
             }
-            
-            // Simuler envoi (mode démo)
+
+            const user = NavetteAuth.getUser();
+            if (!user) { window.location.href = 'connexion.html'; return; }
+
             const btnSubmit = document.getElementById('btnSubmit');
             btnSubmit.disabled = true;
-            btnSubmit.innerHTML = `
-                <svg class="spinner" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"/>
-                </svg>
-                Création en cours...
-            `;
-            
-            setTimeout(function() {
-                // En production, appeler SupabaseAPI.createCorridor(corridorData)
-                
-                // Afficher modal succès
+            btnSubmit.innerHTML = '<svg class="spinner" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg> Création en cours...';
+
+            try {
+                const payload = {
+                    company_id: user.company_id,
+                    departure_zone: corridorData.zoneDepart,
+                    departure_address: corridorData.quartierDepart,
+                    pickup_type: corridorData.typeRamassage,
+                    destination_zone: corridorData.zoneDestination,
+                    destination_address: corridorData.adresseDestination,
+                    departure_time: corridorData.heureAller,
+                    return_time: corridorData.heureRetour,
+                    days: corridorData.jours,
+                    employee_count: corridorData.nombreEmployes,
+                    vehicle_type: corridorData.typeVehicule,
+                    options: corridorData.options,
+                    estimated_cost: calculerCout()
+                };
+                await NavetteAuth.apiFetch('/api/subscriptions', { method: 'POST', body: JSON.stringify(payload) });
                 document.getElementById('modalSucces').classList.remove('hidden');
-                
+            } catch(e) {
+                if (window.Toast) Toast.error('Erreur', e.message || 'Impossible de créer le corridor'); else alert('Erreur : ' + (e.message || 'Impossible de créer le corridor'));
+            } finally {
                 btnSubmit.disabled = false;
-                btnSubmit.innerHTML = `
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="20 6 9 17 4 12"/>
-                    </svg>
-                    Créer le corridor
-                `;
-            }, 2000);
+                btnSubmit.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Créer le corridor';
+            }
         }
         
         // Modals

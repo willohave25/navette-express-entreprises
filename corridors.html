@@ -638,7 +638,6 @@
             const user = NavetteAuth.getUser();
             if (!user) { window.location.href = 'connexion.html'; return; }
 
-            if (window.W2KApp?.Navigation) W2KApp.Navigation.init();
             initFiltres();
             initRecherche();
 
@@ -749,33 +748,33 @@
             const searchInput = document.getElementById('searchCorridors');
             const corridors = document.querySelectorAll('.corridor-card-full');
             
-            searchInput.addEventListener('input', W2KApp.Utils.debounce(function() {
-                const query = this.value.toLowerCase().trim();
-                let visibleCount = 0;
-                
-                corridors.forEach(corridor => {
-                    const text = corridor.textContent.toLowerCase();
-                    
-                    if (query === '' || text.includes(query)) {
-                        corridor.style.display = 'flex';
-                        visibleCount++;
+            let _searchTimer;
+            searchInput.addEventListener('input', function() {
+                clearTimeout(_searchTimer);
+                const input = this;
+                _searchTimer = setTimeout(function() {
+                    const query = input.value.toLowerCase().trim();
+                    let visibleCount = 0;
+                    corridors.forEach(corridor => {
+                        const text = corridor.textContent.toLowerCase();
+                        if (query === '' || text.includes(query)) {
+                            corridor.style.display = 'flex';
+                            visibleCount++;
+                        } else {
+                            corridor.style.display = 'none';
+                        }
+                    });
+                    const emptyState = document.getElementById('emptyState');
+                    const corridorsList = document.getElementById('corridorsList');
+                    if (visibleCount === 0 && query !== '') {
+                        emptyState.classList.remove('hidden');
+                        corridorsList.style.display = 'none';
                     } else {
-                        corridor.style.display = 'none';
+                        emptyState.classList.add('hidden');
+                        corridorsList.style.display = 'flex';
                     }
-                });
-                
-                // Afficher état vide si nécessaire
-                const emptyState = document.getElementById('emptyState');
-                const corridorsList = document.getElementById('corridorsList');
-                
-                if (visibleCount === 0 && query !== '') {
-                    emptyState.classList.remove('hidden');
-                    corridorsList.style.display = 'none';
-                } else {
-                    emptyState.classList.add('hidden');
-                    corridorsList.style.display = 'flex';
-                }
-            }, 300));
+                }, 300);
+            });
         }
         
         // Actions corridors
@@ -799,7 +798,7 @@
                     </svg>
                     Inactif
                 `;
-                W2KApp.Notifications.show('Corridor désactivé', 'warning');
+                if (window.Toast) Toast.warning('Corridor', 'Corridor désactivé');
             } else {
                 corridor.dataset.status = 'actif';
                 badge.className = 'corridor-status-badge status-actif';
@@ -809,7 +808,7 @@
                     </svg>
                     Actif
                 `;
-                W2KApp.Notifications.show('Corridor activé', 'success');
+                if (window.Toast) Toast.success('Corridor', 'Corridor activé');
             }
             
             // Mettre à jour les compteurs

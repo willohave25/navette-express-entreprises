@@ -500,26 +500,23 @@
         // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
             // Vérifier authentification
-            const entrepriseData = W2KApp.Utils.storage.get('entreprise');
-            if (!entrepriseData) {
+            const user = NavetteAuth.getUser();
+            if (!user) {
                 window.location.href = 'connexion.html';
                 return;
             }
-            
-            // Initialiser navigation
-            W2KApp.Navigation.init();
-            
+
             // Afficher heure actuelle
             updateTime();
             setInterval(updateTime, 1000);
-            
+
             // Simuler mouvement véhicule
             simulerMouvement();
-            
+
             // Déconnexion
             document.getElementById('btnLogout')?.addEventListener('click', function(e) {
                 e.preventDefault();
-                W2KApp.Auth.logout();
+                NavetteAuth.logout();
             });
         });
         
